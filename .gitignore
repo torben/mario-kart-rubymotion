@@ -16,3 +16,5 @@ nbproject
 .idea
 
 vendor/static/build-iPhoneSimulator/libstatic.a
+
+vendor/static/build-iPhoneOS/libstatic.a
