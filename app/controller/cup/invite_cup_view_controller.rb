@@ -9,13 +9,24 @@ class InviteCupViewController < RPCollectionViewController
 
     self.title = "Kollege Invite"
     # self.tableView.registerClass(InviteTableViewCell, forCellReuseIdentifier:"Cell")
-    self.collectionView.backgroundColor = '#F0F0F0'.to_color
-    self.collectionView.registerClass(InviteCollectionViewCell, forCellWithReuseIdentifier:"Cell")
+    collectionView.backgroundColor = '#F0F0F0'.to_color
+    collectionView.registerClass(InviteCollectionViewCell, forCellWithReuseIdentifier:"Cell")
+    collectionView.alwaysBounceVertical = true
 
     User.fetch(User.url) do |models|
       self.users = User.where(:id).ne(User.current_user.id).order(:nickname).all
       self.collectionView.reloadData
     end
+
+    @start_button = RPButton.custom
+    @start_button.setTitle('Start Game', forState:UIControlStateNormal)
+    @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
+    @start_button.setBackgroundColor '#26A5EF'.to_color
+    @start_button.layer.cornerRadius = 5
+    @start_button.frame = [[10, view.height + 70], [300, 60]]
+    @start_button.alpha = 0
+
+    view.addSubview @start_button
   end
 
   def cup=(cup)
@@ -57,14 +68,26 @@ class InviteCupViewController < RPCollectionViewController
       cell.selected = false
       @selected_driver.delete user
     else
-      cell.selected = true
       # return if @selected_driver.length >= 3
-
+      cell.selected = true
       # cell.accessoryType = UITableViewCellAccessoryCheckmark
       @selected_driver.push user
     end
 
     wubbel(cell)
+
+    if @selected_driver.length <= 1
+      @start_button.alpha = 1
+      y = if @selected_driver.length == 0
+        view.height + 200
+      else
+        view.height - @start_button.height - 10
+      end
+
+      UIView.animateWithDuration(0.4, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:20, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+        @start_button.y = y
+      }, completion: nil)
+    end
 
     # collectionView.deselectRowAtIndexPath(indexPath, animated:false)
   end
@@ -90,9 +113,6 @@ class InviteCupViewController < RPCollectionViewController
     small_frame = CGRectMake(end_frame.origin.x, end_frame.origin.y, cell.contentView.width * 1.3, cell.contentView.height * 1.3)
 
     animate_duration = 0.08
-    #cell.contentView.transform = CGAffineTransformTranslate(translatedAndScaledTransformUsingViewRect(small_frame, end_frame), 0, 0)
-
-    # UIView.animateWithDuration(0.46, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
 
     UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
       cell.update_cell_selection

@@ -14,7 +14,7 @@ class InviteCollectionViewCell < UICollectionViewCell
     padding = 10
     x, y = padding, padding
     self.image_view = RPImageView.alloc.initWithFrame [[x, y], [80, 80]]
-    self.overlay_image_view = UIView.alloc.initWithFrame [[x, y], [80, 80]]
+    self.overlay_image_view = RPImageView.alloc.initWithFrame [[x, y], [80, 80]]
     x = 0
     y = y + image_view.height + (padding / 2)
 
@@ -28,7 +28,8 @@ class InviteCollectionViewCell < UICollectionViewCell
     image_view.layer.cornerRadius = image_view.width / 2
     image_view.layer.masksToBounds = true
 
-    overlay_image_view = UIImage.imageNamed ""
+    overlay_image_view.image = UIImage.imageNamed "invite_checked"
+    overlay_image_view.alpha = 0
 
     name_label.textAlignment = UITextAlignmentCenter
     name_label.set_font_size 13
@@ -37,7 +38,7 @@ class InviteCollectionViewCell < UICollectionViewCell
     points_label.set_font_size 11
     points_label.textColor = '#CBCBCB'.to_color
 
-    contentView.addSubviews image_view, name_label, points_label
+    contentView.addSubviews image_view, overlay_image_view, name_label, points_label
   end
 
   def update_cell_selection
