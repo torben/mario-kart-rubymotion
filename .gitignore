@@ -14,3 +14,5 @@ nbproject
 .eprj
 .sass-cache
 .idea
+
+vendor/static/build-iPhoneSimulator/libstatic.a
