@@ -49,6 +49,7 @@ class UIView
     # convenience function for casting and to "mask" the recursive function
     self.traverseResponderChainForUIViewController
   end
+  alias_method :first_available_view_controller, :firstAvailableUIViewController
 
   def traverseResponderChainForUIViewController
     nextResponder = self.nextResponder

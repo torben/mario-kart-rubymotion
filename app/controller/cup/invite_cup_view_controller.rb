@@ -1,4 +1,4 @@
-class InviteCupViewController < RPTableViewController
+class InviteCupViewController < RPCollectionViewController
   attr_accessor :cup, :users, :saved_item_count
 
   def viewDidLoad
@@ -8,58 +8,122 @@ class InviteCupViewController < RPTableViewController
     @selected_driver = []
 
     self.title = "Kollege Invite"
-    self.tableView.registerClass(InviteTableViewCell, forCellReuseIdentifier:"Cell")
+    # self.tableView.registerClass(InviteTableViewCell, forCellReuseIdentifier:"Cell")
+    self.collectionView.backgroundColor = '#F0F0F0'.to_color
+    self.collectionView.registerClass(InviteCollectionViewCell, forCellWithReuseIdentifier:"Cell")
 
     User.fetch(User.url) do |models|
       self.users = User.where(:id).ne(User.current_user.id).order(:nickname).all
-      self.tableView.reloadData
+      self.collectionView.reloadData
     end
-
-    next_button = UIBarButtonItem.alloc.initWithTitle("Weiter", style: UIBarButtonItemStylePlain, target:self, action:"do_invite")
-    navigationItem.rightBarButtonItem = next_button
   end
 
   def cup=(cup)
     @cup = cup
   end
 
-  def numberOfSectionsInTableView(tableView)
+  def numberOfSectionsInCollectionView(collectionView)
     1
   end
 
-  def tableView(tableView, numberOfRowsInSection:section)
+  def collectionView(collectionView, numberOfItemsInSection:section)
     @users.length
   end
 
-  def tableView(tableView, cellForRowAtIndexPath:indexPath)
+  def collectionView(collectionView, cellForItemAtIndexPath:indexPath)
     user = users[indexPath.row]
 
-    cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath:indexPath)
-    cell.user = user
+    cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath:indexPath)
+
+    cell.image_view.load_async_image user.avatar_url
+    cell.name_label.text = user.nickname
+    cell.points_label.text = "#{user.total_points} Punkte"
+
     #cell.cellSelection = UIColor.greenColor
 
     if @selected_driver.include?(user)
-      cell.accessoryType = UITableViewCellAccessoryCheckmark
+      # cell.accessoryType = UITableViewCellAccessoryCheckmark
     end
 
     cell
   end
 
-  def tableView(tableView, didSelectRowAtIndexPath:indexPath)
-    cell = tableView.cellForRowAtIndexPath indexPath
+  def collectionView(collectionView, didSelectItemAtIndexPath:indexPath)
+    cell = collectionView.cellForItemAtIndexPath indexPath
     user = users[indexPath.row]
 
     if @selected_driver.include?(user)
-      cell.accessoryType = UITableViewCellAccessoryNone
+      # cell.accessoryType = UITableViewCellAccessoryNone
+      cell.selected = false
       @selected_driver.delete user
     else
+      cell.selected = true
       # return if @selected_driver.length >= 3
 
-      cell.accessoryType = UITableViewCellAccessoryCheckmark
+      # cell.accessoryType = UITableViewCellAccessoryCheckmark
       @selected_driver.push user
     end
 
-    tableView.deselectRowAtIndexPath(indexPath, animated:false)
+    wubbel(cell)
+
+    # collectionView.deselectRowAtIndexPath(indexPath, animated:false)
+  end
+
+  def collectionView(collectionView, layout: collectionViewLayout, sizeForItemAtIndexPath:indexPath)
+    CGSizeMake(100, 145)
+  end
+
+  def collectionView(collectionView, layout:collectionViewLayout, insetForSectionAtIndex:section)
+    [15,10,15,10]
+  end
+
+  def collectionView(collectionView, layout: collectionViewLayout, minimumInteritemSpacingForSectionAtIndex: section)
+    0
+  end
+
+  def collectionView(collectionView, layout:collectionViewLayout, minimumLineSpacingForSectionAtIndex: section)
+    0
+  end
+
+  def wubbel(cell)
+    end_frame = cell.contentView.frame
+    small_frame = CGRectMake(end_frame.origin.x, end_frame.origin.y, cell.contentView.width * 1.3, cell.contentView.height * 1.3)
+
+    animate_duration = 0.08
+    #cell.contentView.transform = CGAffineTransformTranslate(translatedAndScaledTransformUsingViewRect(small_frame, end_frame), 0, 0)
+
+    # UIView.animateWithDuration(0.46, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+
+    UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+      cell.update_cell_selection
+      cell.contentView.transform = CGAffineTransformMakeScale(0.9, 0.9)
+    }, completion: lambda { |completed|
+      UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+        cell.contentView.transform = CGAffineTransformMakeScale(1.08, 1.08)
+      }, completion: lambda { |completed|
+        UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+          cell.contentView.transform = CGAffineTransformMakeScale(0.95, 0.95)
+        }, completion: lambda { |completed|
+          UIView.animateWithDuration(0.11, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+            cell.contentView.transform = CGAffineTransformMakeScale(1.03, 1.03)
+          }, completion: lambda { |completed|
+            UIView.animateWithDuration(0.11, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+              cell.contentView.transform = CGAffineTransformIdentity
+            }, completion: nil)
+          })
+        })
+      })
+    })
+
+
+    UIView.animateWithDuration(0.3, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:0.8, options:UIViewAnimationOptionCurveLinear, animations: lambda {cell.contentView.transform = CGAffineTransformIdentity}, completion: nil)
+  end
+
+  def translatedAndScaledTransformUsingViewRect(view_rect, from_rect)
+    scales = CGSizeMake(view_rect.size.width / from_rect.size.width, view_rect.size.height / from_rect.size.height)
+    offset = CGPointMake(CGRectGetMidX(view_rect) - CGRectGetMidX(from_rect), CGRectGetMidY(view_rect) - CGRectGetMidY(from_rect))
+
+    CGAffineTransformMake(scales.width, 0, 0, scales.height, offset.x, offset.y)
   end
 
   def do_invite

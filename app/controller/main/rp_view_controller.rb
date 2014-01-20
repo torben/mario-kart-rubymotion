@@ -5,4 +5,8 @@ class RPViewController < UIViewController
     super
     handleViewWillDisappear
   end
+
+  def prefersStatusBarHidden
+    true
+  end
 end

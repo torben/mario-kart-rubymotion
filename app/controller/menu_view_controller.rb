@@ -5,8 +5,10 @@ class MenuViewController < RPViewController
     self.page_view_controller = UIPageViewController.alloc.initWithTransitionStyle(UIPageViewControllerTransitionStyleScroll, navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal, options:nil)
     page_view_controller.delegate = self
 
+    collectionViewLayout = UICollectionViewFlowLayout.new
+
     homeViewController = UINavigationController.alloc.initWithRootViewController HomeViewController.new
-    homeViewController2 = UINavigationController.alloc.initWithRootViewController InviteCupViewController.new
+    homeViewController2 = UINavigationController.alloc.initWithRootViewController InviteCupViewController.alloc.initWithCollectionViewLayout(collectionViewLayout)
     homeViewController3 = UINavigationController.alloc.initWithRootViewController RatingViewController.new
     @viewControllers = [homeViewController, homeViewController2, homeViewController3]
 

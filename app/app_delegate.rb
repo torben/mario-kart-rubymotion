@@ -2,6 +2,8 @@ class AppDelegate
   attr_reader :window
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
+    set_defaults
+
     User.deserialize_from_file('users.dat')
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
@@ -18,6 +20,14 @@ class AppDelegate
     loadResources
 
     true
+  end
+
+  def set_defaults
+    textTitleOptions = {UITextAttributeTextColor => '#1A91EE'.to_color, UITextAttributeFont => UIFont.fontWithName("Montserrat-Regular", size:17)}
+    UINavigationBar.appearance.setTitleTextAttributes(textTitleOptions)
+    UINavigationBar.appearance.setBackgroundImage(UIImage.new, forBarPosition:UIBarPositionAny, barMetrics:UIBarMetricsDefault)
+    UINavigationBar.appearance.setBackgroundColor UIColor.whiteColor
+    UINavigationBar.appearance.setShadowImage UIImage.new
   end
 
   def loadResources

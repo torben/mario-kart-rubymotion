@@ -16,7 +16,7 @@ class RPLabel < UILabel
   end
 
   def configure_view
-    self.font = UIFont.fontWithName("Avenir Next", size:17)
+    self.font = UIFont.fontWithName("Montserrat-Regular", size:16)
     self.backgroundColor = UIColor.clearColor
   end
 
@@ -24,6 +24,7 @@ class RPLabel < UILabel
     self.font = self.font.fontWithSize(fontSize)
     self.setMinimumFontSize(fontSize - 10.0)
   end
+  alias_method :set_font_size, :setFontSize
 
   def fontSize
     font.pointSize
