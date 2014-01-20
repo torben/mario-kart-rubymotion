@@ -5,9 +5,7 @@ class AppDelegate
     User.deserialize_from_file('users.dat')
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
-    navigationController = UINavigationController.alloc.initWithRootViewController initialRootViewController
-
-    @window.rootViewController = navigationController
+    @window.rootViewController = initialRootViewController
 
     @window.makeKeyAndVisible
 
@@ -34,7 +32,7 @@ class AppDelegate
 
   def initialRootViewController
     if User.current_user.present?
-      HomeViewController.new
+      MenuViewController.new
     else
       LoginViewController.new
     end
