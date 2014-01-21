@@ -1,5 +1,6 @@
 class RPViewController < UIViewController
   include Modules::RemoteRequestHandler
+  include Modules::UserHelper
 
   def viewWillDisappear(animated)
     super

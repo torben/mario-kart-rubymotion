@@ -6,6 +6,8 @@ class InviteCupViewController < RPCollectionViewController
 
     @users = []
     @selected_driver = []
+    @active_button_color = '#26A5EF'.to_color
+    @inactive_button_color = '#ACE0FE'.to_color
 
     self.title = "Kollege Invite"
     # self.tableView.registerClass(InviteTableViewCell, forCellReuseIdentifier:"Cell")
@@ -14,17 +16,20 @@ class InviteCupViewController < RPCollectionViewController
     collectionView.alwaysBounceVertical = true
 
     User.fetch(User.url) do |models|
-      self.users = User.where(:id).ne(User.current_user.id).order(:nickname).all
+      self.users = User.where(:id).ne(current_user.id).order(:nickname).all
       self.collectionView.reloadData
     end
 
     @start_button = RPButton.custom
     @start_button.setTitle('Start Game', forState:UIControlStateNormal)
+    @start_button.setTitle('Zu viele Spieler!', forState:UIControlStateDisabled)
     @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
-    @start_button.setBackgroundColor '#26A5EF'.to_color
+    @start_button.setBackgroundColor @active_button_color
     @start_button.layer.cornerRadius = 5
     @start_button.frame = [[10, view.height + 70], [300, 60]]
     @start_button.alpha = 0
+
+    @start_button.addTarget(self, action:"do_invite", forControlEvents:UIControlEventTouchUpInside)
 
     view.addSubview @start_button
   end
@@ -75,19 +80,7 @@ class InviteCupViewController < RPCollectionViewController
     end
 
     wubbel(cell)
-
-    if @selected_driver.length <= 1
-      @start_button.alpha = 1
-      y = if @selected_driver.length == 0
-        view.height + 200
-      else
-        view.height - @start_button.height - 10
-      end
-
-      UIView.animateWithDuration(0.4, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:20, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-        @start_button.y = y
-      }, completion: nil)
-    end
+    update_invite_button
 
     # collectionView.deselectRowAtIndexPath(indexPath, animated:false)
   end
@@ -117,6 +110,10 @@ class InviteCupViewController < RPCollectionViewController
     UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
       cell.update_cell_selection
       cell.contentView.transform = CGAffineTransformMakeScale(0.9, 0.9)
+
+      # UIView.animateWithDuration(0.6, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:40, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+      #   cell.contentView.transform = CGAffineTransformIdentity
+      # }, completion: nil)
     }, completion: lambda { |completed|
       UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
         cell.contentView.transform = CGAffineTransformMakeScale(1.08, 1.08)
@@ -146,6 +143,27 @@ class InviteCupViewController < RPCollectionViewController
     CGAffineTransformMake(scales.width, 0, 0, scales.height, offset.x, offset.y)
   end
 
+  def update_invite_button
+    @start_button.enabled = true
+    @start_button.setBackgroundColor @active_button_color
+
+    if @selected_driver.length <= 1
+      @start_button.alpha = 1
+      y = if @selected_driver.length == 0
+        view.height + 200
+      else
+        view.height - @start_button.height - 10
+      end
+
+      UIView.animateWithDuration(0.4, delay:0.3, usingSpringWithDamping:0.75, initialSpringVelocity:20, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+        @start_button.y = y
+      }, completion: nil)
+    elsif @selected_driver.length > 3
+      @start_button.enabled = false
+      @start_button.setBackgroundColor @inactive_button_color
+    end
+  end
+
   def do_invite
     return if @selected_driver.length == 0
 
@@ -153,22 +171,29 @@ class InviteCupViewController < RPCollectionViewController
 
     params = {
       params: {
-        api_key: User.current_user.api_key
+        api_key: current_user.api_key
       }
     }
 
+    cup = Cup.new
+    cup.host_user_id = current_user.id
+
     self.saved_item_count = 0
-    @selected_driver.each do |user|
-      cup_member = CupMember.new({ cup_id: cup.id, user_id: user.id, state: 'invited'})
-      cup_member.save_remote(params) do
-        self.saved_item_count += 1
+    cup.save_remote(params) do |new_cup|
+      @selected_driver.each do |user|
+        cup_member = CupMember.new({ cup_id: new_cup.id, user_id: user.id, state: 'invited'})
+        cup_member.save_remote(params) do
+          self.saved_item_count += 1
 
-        if saved_item_count == @selected_driver.length
-          LoadingView.hide
+          if saved_item_count == @selected_driver.length
+            LoadingView.hide
 
-          cup_view_controller = CupViewController.alloc.initWithStyle UITableViewStyleGrouped
-          navigationController.pushViewController(cup_view_controller, animated: true)
-          cup_view_controller.cup = cup
+            cup_view_controller = CupViewController.alloc.initWithStyle UITableViewStyleGrouped
+            nvc = UINavigationController.alloc.initWithRootViewController cup_view_controller
+
+            presentViewController(nvc, animated:true, completion:nil)
+            cup_view_controller.cup = new_cup
+          end
         end
       end
     end
