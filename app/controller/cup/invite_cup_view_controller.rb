@@ -6,6 +6,7 @@ class InviteCupViewController < RPCollectionViewController
 
     @users = []
     @selected_driver = []
+    @selected_rows = []
     @active_button_color = '#26A5EF'.to_color
     @inactive_button_color = '#ACE0FE'.to_color
 
@@ -29,9 +30,35 @@ class InviteCupViewController < RPCollectionViewController
     @start_button.frame = [[10, view.height + 70], [300, 60]]
     @start_button.alpha = 0
 
-    @start_button.addTarget(self, action:"do_invite", forControlEvents:UIControlEventTouchUpInside)
+    @invited_view = InvitedView.alloc.initWithFrame [[0,0], [Device.screen.width, Device.screen.height]]
+    @invited_view.hidden = true
+
+    @start_button.when(UIControlEventTouchUpInside, &Proc.new {
+      LoadingView.show
+
+      cup = Cup.new
+      cup.host_user_id = current_user.id
+
+      cup.save_remote(params) do |new_cup|
+        self.cup = Cup.find(new_cup.id)
+        do_invite do
+          LoadingView.hide
+          show_invite_view
+        end
+      end
+    }.weak!)
+
+    @invited_view.results_button.addTarget(self, action:"do_stats", forControlEvents:UIControlEventTouchUpInside)
 
     view.addSubview @start_button
+
+    App.window.addSubview @invited_view
+  end
+
+  def show_invite_view
+    @invited_view.hidden = false
+
+    wubbel(@invited_view.invited_image_view)
   end
 
   def cup=(cup)
@@ -72,14 +99,17 @@ class InviteCupViewController < RPCollectionViewController
       # cell.accessoryType = UITableViewCellAccessoryNone
       cell.selected = false
       @selected_driver.delete user
+      @selected_rows.delete indexPath
     else
       # return if @selected_driver.length >= 3
       cell.selected = true
       # cell.accessoryType = UITableViewCellAccessoryCheckmark
       @selected_driver.push user
+      @selected_rows.push indexPath
     end
 
-    wubbel(cell)
+    cell.update_cell_selection
+    wubbel(cell.contentView)
     update_invite_button
 
     # collectionView.deselectRowAtIndexPath(indexPath, animated:false)
@@ -101,39 +131,45 @@ class InviteCupViewController < RPCollectionViewController
     0
   end
 
-  def wubbel(cell)
-    end_frame = cell.contentView.frame
-    small_frame = CGRectMake(end_frame.origin.x, end_frame.origin.y, cell.contentView.width * 1.3, cell.contentView.height * 1.3)
+  def deselect_all_items
+    for indexPath in @selected_rows
+      cell = collectionView.cellForItemAtIndexPath indexPath
+      cell.selected = false if cell.present?
+      cell.update_cell_selection
+    end
 
+    @selected_driver = []
+    @selected_rows = []
+  end
+
+  def wubbel(view)
     animate_duration = 0.08
 
     UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-      cell.update_cell_selection
-      cell.contentView.transform = CGAffineTransformMakeScale(0.9, 0.9)
+      view.transform = CGAffineTransformMakeScale(0.9, 0.9)
 
       # UIView.animateWithDuration(0.6, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:40, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
       #   cell.contentView.transform = CGAffineTransformIdentity
       # }, completion: nil)
     }, completion: lambda { |completed|
       UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-        cell.contentView.transform = CGAffineTransformMakeScale(1.08, 1.08)
+        view.transform = CGAffineTransformMakeScale(1.08, 1.08)
       }, completion: lambda { |completed|
         UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-          cell.contentView.transform = CGAffineTransformMakeScale(0.95, 0.95)
+          view.transform = CGAffineTransformMakeScale(0.95, 0.95)
         }, completion: lambda { |completed|
           UIView.animateWithDuration(0.11, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-            cell.contentView.transform = CGAffineTransformMakeScale(1.03, 1.03)
+            view.transform = CGAffineTransformMakeScale(1.03, 1.03)
           }, completion: lambda { |completed|
             UIView.animateWithDuration(0.11, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-              cell.contentView.transform = CGAffineTransformIdentity
+              view.transform = CGAffineTransformIdentity
             }, completion: nil)
           })
         })
       })
     })
 
-
-    UIView.animateWithDuration(0.3, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:0.8, options:UIViewAnimationOptionCurveLinear, animations: lambda {cell.contentView.transform = CGAffineTransformIdentity}, completion: nil)
+    # UIView.animateWithDuration(0.3, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:0.8, options:UIViewAnimationOptionCurveLinear, animations: lambda {cell.contentView.transform = CGAffineTransformIdentity}, completion: nil)
   end
 
   def translatedAndScaledTransformUsingViewRect(view_rect, from_rect)
@@ -164,38 +200,40 @@ class InviteCupViewController < RPCollectionViewController
     end
   end
 
-  def do_invite
-    return if @selected_driver.length == 0
-
-    LoadingView.show
-
-    params = {
+  def params
+    @params ||= {
       params: {
         api_key: current_user.api_key
       }
     }
+  end
 
-    cup = Cup.new
-    cup.host_user_id = current_user.id
+  def do_invite(&block)
+    return if @selected_driver.length == 0
 
     self.saved_item_count = 0
-    cup.save_remote(params) do |new_cup|
-      @selected_driver.each do |user|
-        cup_member = CupMember.new({ cup_id: new_cup.id, user_id: user.id, state: 'invited'})
-        cup_member.save_remote(params) do
-          self.saved_item_count += 1
+    @selected_driver.each do |user|
+      cup_member = CupMember.new({ cup_id: cup.id, user_id: user.id, state: 'invited'})
+      cup_member.save_remote(params) do
+        self.saved_item_count += 1
 
-          if saved_item_count == @selected_driver.length
-            LoadingView.hide
-
-            cup_view_controller = CupViewController.alloc.initWithStyle UITableViewStyleGrouped
-            nvc = UINavigationController.alloc.initWithRootViewController cup_view_controller
-
-            presentViewController(nvc, animated:true, completion:nil)
-            cup_view_controller.cup = new_cup
-          end
+        if saved_item_count == @selected_driver.length
+          puts "jap".red
+          block.call if block.present? && block.respond_to?(:call)
         end
       end
     end
+  end
+
+  def do_stats
+    deselect_all_items
+    @invited_view.hidden = true
+
+    menu_view_controller = App.window.rootViewController
+    raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
+
+    stats_controller = menu_view_controller.vc_at_position 0
+    menu_view_controller.goto_vc_at_position(0, UIPageViewControllerNavigationDirectionReverse, true)
+    # cup_view_controller.cup = cup
   end
 end

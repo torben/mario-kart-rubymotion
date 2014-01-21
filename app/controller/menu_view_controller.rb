@@ -48,4 +48,12 @@ class MenuViewController < RPViewController
 
     @viewControllers[index]
   end
+
+  def goto_vc_at_position(position, direction = UIPageViewControllerNavigationDirectionForward, animated = true)
+    page_view_controller.setViewControllers([@viewControllers[position]], direction:direction, animated:animated, completion:nil)
+  end
+
+  def vc_at_position(position)
+    [@viewControllers[position]]
+  end
 end
