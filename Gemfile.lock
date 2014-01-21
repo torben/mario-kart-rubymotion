@@ -11,6 +11,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     bubble-wrap (1.4.0)
+    colorize (0.5.8)
+    motion-colorize (1.0)
+      colorize (~> 0.5.8)
     motion-require (0.0.7)
     motion-support (0.2.5)
       motion-require (>= 0.0.6)
@@ -26,6 +29,7 @@ PLATFORMS
 
 DEPENDENCIES
   bubble-wrap
+  motion-colorize
   motion-support
   motion_model!
   motion_model_resource
