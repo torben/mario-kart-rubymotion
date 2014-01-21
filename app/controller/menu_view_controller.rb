@@ -7,12 +7,12 @@ class MenuViewController < RPViewController
 
     collectionViewLayout = UICollectionViewFlowLayout.new
 
-    homeViewController = UINavigationController.alloc.initWithRootViewController HomeViewController.new
-    homeViewController2 = UINavigationController.alloc.initWithRootViewController InviteCupViewController.alloc.initWithCollectionViewLayout(collectionViewLayout)
-    homeViewController3 = UINavigationController.alloc.initWithRootViewController RatingViewController.new
-    @viewControllers = [homeViewController, homeViewController2, homeViewController3]
+    left_vc = UINavigationController.alloc.initWithRootViewController HomeViewController.new
+    middle_vc = UINavigationController.alloc.initWithRootViewController InviteCupViewController.alloc.initWithCollectionViewLayout(collectionViewLayout)
+    right_vc = UINavigationController.alloc.initWithRootViewController RatingViewController.new
+    @viewControllers = [left_vc, middle_vc, right_vc]
 
-    page_view_controller.setViewControllers([homeViewController2], direction:UIPageViewControllerNavigationDirectionForward, animated:false, completion:nil)
+    page_view_controller.setViewControllers([middle_vc], direction:UIPageViewControllerNavigationDirectionForward, animated:false, completion:nil)
 
     page_view_controller.dataSource = self
 
