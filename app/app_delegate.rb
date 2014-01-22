@@ -5,11 +5,13 @@ class AppDelegate
     set_defaults
 
     User.deserialize_from_file('users.dat')
+    UserDevice.deserialize_from_file('user_devices.dat')
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
     @window.rootViewController = initialRootViewController
 
     @window.makeKeyAndVisible
+    @window.backgroundColor = UIColor.whiteColor
 
     if launchOptions
       remoteNotification = launchOptions[:UIApplicationLaunchOptionsRemoteNotificationKey]
@@ -20,6 +22,14 @@ class AppDelegate
     loadResources
 
     true
+  end
+
+  def applicationDidBecomeActive(application)
+    UIApplication.sharedApplication.setApplicationIconBadgeNumber(0)
+
+    new_device = UserDevice.current_user_device.blank?
+
+    store_device
   end
 
   def set_defaults
@@ -50,6 +60,31 @@ class AppDelegate
 
   def applicationDidEnterBackground(application)
     User.serialize_to_file('users.dat')
+  end
+
+  def application(app, didRegisterForRemoteNotificationsWithDeviceToken:device_token)
+    user = User.current_user
+    return if user.blank?
+
+    token = device_token.description.gsub(" ", "").gsub("<", "").gsub(">", "")
+
+    user_device = UserDevice.current_user_device
+    user_device.apn_token = token
+    user_device.remote_save
+  end
+
+  def store_device
+    #deviceUDID = UIDevice.currentDevice.identifierForVendor.UUIDString
+
+    user_device = UserDevice.current_user_device || UserDevice.new
+
+    user_device.os_version = Device.ios_version
+    user_device.app_version = App.version
+    user_device.retina = Device.retina?
+    user_device.model = UIDevice.currentDevice.model
+    user_device.language = App.current_locale.localeIdentifier
+
+    user_device.remote_save
   end
 
   private

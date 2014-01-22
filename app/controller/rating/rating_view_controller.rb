@@ -6,7 +6,15 @@ class RatingViewController < RPTableViewController
 
     self.title = "Die Tabelle"
     self.tableView.registerClass(RatingTableViewCell, forCellReuseIdentifier:"Cell")
+  end
 
+  def viewWillAppear(animated)
+    super
+
+    load_user
+  end
+
+  def load_user
     User.fetch(User.url) do |models|
       self.users = User.order{|one, two| two.points_per_race <=> one.points_per_race}.all
       self.tableView.reloadData

@@ -10,20 +10,17 @@ class InviteCupViewController < RPCollectionViewController
     @active_button_color = '#26A5EF'.to_color
     @inactive_button_color = '#ACE0FE'.to_color
 
-    self.title = "Kollege Invite"
+    self.title = "Select Players"
     # self.tableView.registerClass(InviteTableViewCell, forCellReuseIdentifier:"Cell")
     collectionView.backgroundColor = '#F0F0F0'.to_color
     collectionView.registerClass(InviteCollectionViewCell, forCellWithReuseIdentifier:"Cell")
     collectionView.alwaysBounceVertical = true
 
-    User.fetch(User.url) do |models|
-      self.users = User.where(:id).ne(current_user.id).order(:nickname).all
-      self.collectionView.reloadData
-    end
+    load_user
 
     @start_button = RPButton.custom
     @start_button.setTitle('Start Game', forState:UIControlStateNormal)
-    @start_button.setTitle('Zu viele Spieler!', forState:UIControlStateDisabled)
+    @start_button.setTitle('Too much Lümmels!', forState:UIControlStateDisabled)
     @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
     @start_button.setBackgroundColor @active_button_color
     @start_button.layer.cornerRadius = 5
@@ -32,6 +29,7 @@ class InviteCupViewController < RPCollectionViewController
 
     @invited_view = InvitedView.alloc.initWithFrame [[0,0], [Device.screen.width, Device.screen.height]]
     @invited_view.hidden = true
+    @invited_view.close_button.addTarget(self, action:"close_invited_view", forControlEvents:UIControlEventTouchUpInside)
 
     @start_button.when(UIControlEventTouchUpInside, &Proc.new {
       LoadingView.show
@@ -55,10 +53,28 @@ class InviteCupViewController < RPCollectionViewController
     App.window.addSubview @invited_view
   end
 
+  def viewWillAppear(animated)
+    super
+
+    @start_button.alpha = 0 if @selected_driver.length == 0
+  end
+
+  def load_user
+    User.fetch(User.url) do |models|
+      self.users = User.where(:id).ne(current_user.id).order(:nickname).all
+      self.collectionView.reloadData
+    end
+  end
+
   def show_invite_view
     @invited_view.hidden = false
 
-    wubbel(@invited_view.invited_image_view)
+    @invited_view.center_view.alpha = 0
+    UIView.animateWithDuration(0.4, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+      @invited_view.center_view.alpha = 1
+    }, completion: lambda { |completed|
+      wubbel(@invited_view.center_view)
+    })
   end
 
   def cup=(cup)
@@ -211,6 +227,8 @@ class InviteCupViewController < RPCollectionViewController
   def do_invite(&block)
     return if @selected_driver.length == 0
 
+    @selected_driver.unshift current_user
+
     self.saved_item_count = 0
     @selected_driver.each do |user|
       cup_member = CupMember.new({ cup_id: cup.id, user_id: user.id, state: 'invited'})
@@ -218,22 +236,29 @@ class InviteCupViewController < RPCollectionViewController
         self.saved_item_count += 1
 
         if saved_item_count == @selected_driver.length
-          puts "jap".red
           block.call if block.present? && block.respond_to?(:call)
         end
       end
     end
   end
 
-  def do_stats
+  def close_invited_view
     deselect_all_items
     @invited_view.hidden = true
+    @start_button.alpha = 0 if @selected_driver.length == 0
+  end
+
+  def do_stats
+    close_invited_view
 
     menu_view_controller = App.window.rootViewController
     raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
 
     stats_controller = menu_view_controller.vc_at_position 0
-    menu_view_controller.goto_vc_at_position(0, UIPageViewControllerNavigationDirectionReverse, true)
-    # cup_view_controller.cup = cup
+    stats_controller.cup = cup
+
+    EM.add_timer 0.2 do
+      menu_view_controller.goto_vc_at_position(0, UIPageViewControllerNavigationDirectionReverse, true)
+    end
   end
 end

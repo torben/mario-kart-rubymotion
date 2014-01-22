@@ -2,12 +2,13 @@ class MenuViewController < RPViewController
   attr_accessor :page_view_controller
 
   def viewDidLoad
+    super
     self.page_view_controller = UIPageViewController.alloc.initWithTransitionStyle(UIPageViewControllerTransitionStyleScroll, navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal, options:nil)
     page_view_controller.delegate = self
 
     collectionViewLayout = UICollectionViewFlowLayout.new
 
-    left_vc = UINavigationController.alloc.initWithRootViewController HomeViewController.new
+    left_vc = UINavigationController.alloc.initWithRootViewController FinishCupViewController.alloc.initWithStyle UITableViewStylePlain
     middle_vc = UINavigationController.alloc.initWithRootViewController InviteCupViewController.alloc.initWithCollectionViewLayout(collectionViewLayout)
     right_vc = UINavigationController.alloc.initWithRootViewController RatingViewController.new
     @viewControllers = [left_vc, middle_vc, right_vc]
@@ -27,6 +28,10 @@ class MenuViewController < RPViewController
 
     # Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
     view.gestureRecognizers = self.page_view_controller.gestureRecognizers
+
+    EM.add_timer 1.0, Proc.new {
+      UIApplication.sharedApplication.registerForRemoteNotificationTypes(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)
+    }.weak!
   end
 
   def pageViewController(page_view_controller, viewControllerBeforeViewController:viewController)
@@ -54,6 +59,9 @@ class MenuViewController < RPViewController
   end
 
   def vc_at_position(position)
-    [@viewControllers[position]]
+    vc = @viewControllers[position]
+    vc = vc.visibleViewController if vc.is_a?(UINavigationController)
+
+    vc
   end
 end

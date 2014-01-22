@@ -11,14 +11,14 @@ class LoginViewController < RPViewController
     @emailField.delegate = self
     @emailField.tag = 1
     @emailField.placeholder = "E-Mail"
-    @emailField.text = "torben@pixoona.de"
+    @emailField.text = ""
 
     @passwordField = RPTextField.new
     @passwordField.secureTextEntry = true
     @passwordField.delegate = self
     @passwordField.tag = 2
     @passwordField.placeholder = "Passwort"
-    @passwordField.text = "12345678"
+    @passwordField.text = ""
 
     @loginButton = RPButton.buttonWithType(UIButtonTypeCustom)
     @loginButton.setTitle("Einloggen", forState:UIControlStateNormal)
@@ -65,7 +65,7 @@ class LoginViewController < RPViewController
   def submitForm
     if @emailField.text.present? && @passwordField.text.present?
       User.login(@emailField.text, @passwordField.text) do |user|
-        navigationController.setViewControllers([HomeViewController.new])
+        App.window.rootViewController = MenuViewController.new
       end
     end
   end

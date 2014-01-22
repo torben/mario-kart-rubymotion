@@ -13,7 +13,7 @@ class InviteCollectionViewCell < UICollectionViewCell
     @border_width = 3
     padding = 10
     x, y = padding, padding
-    self.image_view = RPImageView.alloc.initWithFrame [[x, y], [80, 80]]
+    self.image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [80, 80]]
     self.overlay_image_view = RPImageView.alloc.initWithFrame [[x, y], [80, 80]]
     x = 0
     y = y + image_view.height + (padding / 2)
@@ -22,11 +22,6 @@ class InviteCollectionViewCell < UICollectionViewCell
     y = y + name_label.height + (padding / 2)
 
     self.points_label = RPLabel.alloc.initWithFrame [[x, y], [100, 14]]
-
-    image_view.layer.borderColor = '#D8D8D8'.to_color.CGColor
-    image_view.layer.borderWidth = @border_width
-    image_view.layer.cornerRadius = image_view.width / 2
-    image_view.layer.masksToBounds = true
 
     overlay_image_view.image = UIImage.imageNamed "invite_checked"
     overlay_image_view.alpha = 0
