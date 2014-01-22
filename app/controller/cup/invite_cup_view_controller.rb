@@ -19,8 +19,8 @@ class InviteCupViewController < RPCollectionViewController
     load_user
 
     @start_button = RPButton.custom
-    @start_button.setTitle('Start Game', forState:UIControlStateNormal)
-    @start_button.setTitle('Too much Lümmels!', forState:UIControlStateDisabled)
+    @start_button.setTitle('Invite Lümmels', forState:UIControlStateNormal)
+    # @start_button.setTitle('Too much Lümmels!', forState:UIControlStateDisabled)
     @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
     @start_button.setBackgroundColor @active_button_color
     @start_button.layer.cornerRadius = 5
@@ -30,6 +30,8 @@ class InviteCupViewController < RPCollectionViewController
     @invited_view = InvitedView.alloc.initWithFrame [[0,0], [Device.screen.width, Device.screen.height]]
     @invited_view.hidden = true
     @invited_view.close_button.addTarget(self, action:"close_invited_view", forControlEvents:UIControlEventTouchUpInside)
+    @invited_view.close_button.hidden = true
+    @invited_view.results_button.hidden = true
 
     @start_button.when(UIControlEventTouchUpInside, &Proc.new {
       LoadingView.show
@@ -73,7 +75,14 @@ class InviteCupViewController < RPCollectionViewController
     UIView.animateWithDuration(0.4, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
       @invited_view.center_view.alpha = 1
     }, completion: lambda { |completed|
-      wubbel(@invited_view.center_view)
+      wubbel(@invited_view.center_view) do
+        UIView.animateWithDuration(0.4, delay:1, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+          @invited_view.alpha = 0
+        }, completion: lambda { |completed|
+          @invited_view.alpha = 1
+          do_stats
+        })
+      end
     })
   end
 
@@ -158,7 +167,7 @@ class InviteCupViewController < RPCollectionViewController
     @selected_rows = []
   end
 
-  def wubbel(view)
+  def wubbel(view, &block)
     animate_duration = 0.08
 
     UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
@@ -179,7 +188,9 @@ class InviteCupViewController < RPCollectionViewController
           }, completion: lambda { |completed|
             UIView.animateWithDuration(0.11, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
               view.transform = CGAffineTransformIdentity
-            }, completion: nil)
+            }, completion: lambda { |completed|
+              block.call if block.present? && block.respond_to?(:call)
+            })
           })
         })
       })
@@ -196,7 +207,7 @@ class InviteCupViewController < RPCollectionViewController
   end
 
   def update_invite_button
-    @start_button.enabled = true
+    # @start_button.enabled = true
     @start_button.setBackgroundColor @active_button_color
 
     if @selected_driver.length <= 1
@@ -211,8 +222,8 @@ class InviteCupViewController < RPCollectionViewController
         @start_button.y = y
       }, completion: nil)
     elsif @selected_driver.length > 3
-      @start_button.enabled = false
-      @start_button.setBackgroundColor @inactive_button_color
+      # @start_button.enabled = false
+      # @start_button.setBackgroundColor @inactive_button_color
     end
   end
 
