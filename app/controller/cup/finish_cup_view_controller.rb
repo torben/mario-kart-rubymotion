@@ -22,8 +22,65 @@ class FinishCupViewController < RPTableViewController
 
     # tableView.addSubview @start_button
 
+    gesture = UILongPressGestureRecognizer.alloc.initWithTarget(self, action:"start_deleting:")
+    tableView.addGestureRecognizer(gesture)
+
     close_button = UIBarButtonItem.alloc.initWithTitle("Done", style: UIBarButtonItemStylePlain, target:self, action:"close_cup")
     navigationItem.rightBarButtonItem = close_button
+  end
+
+  def start_deleting(gesture)
+    touchPoint = gesture.locationInView(tableView)
+    indexPath = tableView.indexPathForRowAtPoint(touchPoint)
+
+    return if indexPath.blank?
+    return if cup_members[indexPath.row].blank? || cup_members[indexPath.row].user.id == current_user.id
+
+    cell = tableView.cellForRowAtIndexPath indexPath
+
+    case gesture.state
+    when UIGestureRecognizerStateBegan then start_delete cell
+    when UIGestureRecognizerStateEnded then cancel_delete cell
+    end
+  end
+
+  def start_delete(cell)
+    return if cell.alpha == 0
+    cancel_timer
+
+    UIView.animateWithDuration(0.6, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+      cell.alpha = 0.01
+    }, completion: lambda { |completed|
+      if completed
+        cell.alpha = 0
+        finish_delete(cell)
+      end
+    })
+  end
+
+  def cancel_delete(cell)
+    return if cell.alpha == 0
+
+    UIView.animateWithDuration(0.6, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+        cell.alpha = 1
+      }, completion: lambda { |finished|
+        reload_cup if finished
+      })
+  end
+
+  def finish_delete(cell)
+    if cell.alpha == 0.0
+      indexPath = tableView.indexPathForCell(cell)
+      return if indexPath.blank?
+
+      LoadingView.show("Deleting")
+      cup_members[indexPath.row].destroy_remote(params) do
+        LoadingView.hide
+        reload_cup
+      end
+    else
+      cancel_delete
+    end
   end
 
   def viewWillAppear(animated)
@@ -137,18 +194,6 @@ class FinishCupViewController < RPTableViewController
 
   def tableView(tableView, heightForRowAtIndexPath:indexPath)
     101
-  end
-
-  def tableView(tableView, canEditRowAtIndexPath:indexPath)
-    puts "called?"
-    true
-  end
-
-  def tableView(tableView, commitEditingStyle:editingStyle, forRowAtIndexPath:indexPath)
-    if editingStyle == UITableViewCellEditingStyleDelete
-      puts "REMOVE!!!".red
-      # [self.dataArray removeObjectAtIndex:indexPath.row];
-    end
   end
 
   # Input delegates
