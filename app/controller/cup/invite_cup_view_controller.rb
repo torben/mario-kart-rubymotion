@@ -264,11 +264,11 @@ class InviteCupViewController < RPCollectionViewController
     menu_view_controller = App.window.rootViewController
     raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
 
-    stats_controller = menu_view_controller.vc_at_position 0
+    stats_controller = menu_view_controller.vc_at_position 2
     stats_controller.cup = cup
 
     EM.add_timer 0.2 do
-      menu_view_controller.goto_vc_at_position(0, UIPageViewControllerNavigationDirectionReverse, true)
+      menu_view_controller.goto_vc_at_position(2, UIPageViewControllerNavigationDirectionForward, true)
     end
   end
 end
