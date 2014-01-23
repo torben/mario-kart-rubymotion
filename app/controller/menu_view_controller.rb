@@ -16,6 +16,10 @@ class MenuViewController < RPViewController
     page_view_controller.setViewControllers([middle_vc], direction:UIPageViewControllerNavigationDirectionForward, animated:false, completion:nil)
 
     page_view_controller.dataSource = self
+    page_view_controller.delegate = self
+    page_view_controller.view.subviews.each do |v|
+      v.delegate = self if v.respond_to?(:delegate=)
+    end
 
     addChildViewController page_view_controller
     view.addSubview page_view_controller.view
@@ -27,7 +31,7 @@ class MenuViewController < RPViewController
     page_view_controller.didMoveToParentViewController self
 
     # Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
-    view.gestureRecognizers = self.page_view_controller.gestureRecognizers
+    # view.gestureRecognizers = page_view_controller.gestureRecognizers
 
     EM.add_timer 1.0, Proc.new {
       UIApplication.sharedApplication.registerForRemoteNotificationTypes(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)
@@ -35,8 +39,12 @@ class MenuViewController < RPViewController
   end
 
   def pageViewController(page_view_controller, viewControllerBeforeViewController:viewController)
+    bounces(true)
     index = @viewControllers.index(viewController)
-    return if index.blank? || index == 0
+    if index.blank? || index == 0
+      bounces(false)
+      return
+    end
 
     index -= 1
 
@@ -44,14 +52,24 @@ class MenuViewController < RPViewController
   end
 
   def pageViewController(page_view_controller, viewControllerAfterViewController:viewController)
+    bounces(true)
     index = @viewControllers.index(viewController)
     return if index.blank?
 
     index += 1
 
-    return if index >= @viewControllers.length
+    if index >= @viewControllers.length
+      bounces(false)
+      return
+    end
 
     @viewControllers[index]
+  end
+
+  def bounces(bounce)
+    page_view_controller.view.subviews.each do |v|
+      v.bounces = bounce if v.respond_to?(:bounces)
+    end
   end
 
   def goto_vc_at_position(position, direction = UIPageViewControllerNavigationDirectionForward, animated = true)
