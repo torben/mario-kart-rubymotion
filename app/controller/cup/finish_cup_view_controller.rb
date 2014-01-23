@@ -1,50 +1,92 @@
 class FinishCupViewController < RPTableViewController
   attr_reader :cup
-  attr_accessor :saved_item_count
+  attr_accessor :saved_item_count, :timer
 
   def viewDidLoad
     self.title = "Fill in the results"
     tableView.registerClass(FinishTableViewCell, forCellReuseIdentifier:"Cell")
 
-    # nextButton = UIBarButtonItem.alloc.initWithTitle("Fertig", style: UIBarButtonItemStylePlain, target:self, action:"close_cup")
-    # self.navigationItem.rightBarButtonItem = nextButton
-
     tableView.separatorStyle = UITableViewCellSeparatorStyleNone
     tableView.separatorColor = UIColor.clearColor
     tableView.backgroundColor = '#F0F0F0'.to_color
 
-    @start_button = RPButton.custom
-    @start_button.setTitle('Done', forState:UIControlStateNormal)
-    @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
-    @start_button.setBackgroundColor '#26A5EF'.to_color
-    @start_button.layer.cornerRadius = 5
-    @start_button.frame = [[10, tableView.height - 70 - navigationController.navigationBar.height], [300, 60]]
-    update_start_button
+    # @start_button = RPButton.custom
+    # @start_button.setTitle('Done', forState:UIControlStateNormal)
+    # @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
+    # @start_button.setBackgroundColor '#26A5EF'.to_color
+    # @start_button.layer.cornerRadius = 5
+    # @start_button.frame = [[10, tableView.height - 70 - navigationController.navigationBar.height], [300, 60]]
+    # update_start_button
 
-    @start_button.addTarget(self, action:"close_cup", forControlEvents:UIControlEventTouchUpInside)
+    # @start_button.addTarget(self, action:"close_cup", forControlEvents:UIControlEventTouchUpInside)
 
-    tableView.addSubview @start_button
+    # tableView.addSubview @start_button
+
+    close_button = UIBarButtonItem.alloc.initWithTitle("Done", style: UIBarButtonItemStylePlain, target:self, action:"close_cup")
+    navigationItem.rightBarButtonItem = close_button
+  end
+
+  def viewWillAppear(animated)
+    super(animated)
+
+    reload_cup
+  end
+
+  def viewWillDisappear(animated)
+    super
+
+    cancel_timer
   end
 
   def cup=(cup)
     @cup = cup
 
-    tableView.reloadData
-    update_start_button
+    reload
   end
 
-  def update_start_button
-    @start_button.hidden = cup.blank?
+  def reload
+    tableView.reloadData
+    # update_start_button
+
+    reload_cup
   end
+
+  def reload_cup
+    return if cup.blank?
+    cancel_timer
+
+    self.timer = EM.add_timer 10.0 do
+      LoadingView.show("Reloading")
+      Cup.fetch("#{Cup.url}/#{cup.id}") do |l_cap|
+        self.cup = Cup.find(l_cap.id)
+        LoadingView.hide
+      end
+    end
+  end
+
+  def cancel_timer
+    EM.cancel_timer(timer) if timer.present?
+  end
+
+  # def update_start_button
+  #   @start_button.hidden = cup.blank?
+  # end
 
   def numberOfSectionsInTableView(tableView)
     1
   end
 
+  def cup_members
+    cup_members = [cup.hosting_member]
+    cup_members << cup.accepted_members
+    cup_members << cup.invited_members
+    cup_members.flatten
+  end
+
   def row_count
     return 0 if cup.blank?
 
-    cup.cup_members.try(:length) || 0
+    cup_members.try(:length) || 0
   end
 
   def tableView(tableView, numberOfRowsInSection:section)
@@ -58,7 +100,7 @@ class FinishCupViewController < RPTableViewController
   # end
 
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
-    cup_member = cup.cup_members[indexPath.row]
+    cup_member = cup_members[indexPath.row]
 
     cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath:indexPath)
     cell.input_field.delegate = self
@@ -97,14 +139,31 @@ class FinishCupViewController < RPTableViewController
     101
   end
 
+  def tableView(tableView, canEditRowAtIndexPath:indexPath)
+    puts "called?"
+    true
+  end
+
+  def tableView(tableView, commitEditingStyle:editingStyle, forRowAtIndexPath:indexPath)
+    if editingStyle == UITableViewCellEditingStyleDelete
+      puts "REMOVE!!!".red
+      # [self.dataArray removeObjectAtIndex:indexPath.row];
+    end
+  end
+
   # Input delegates
+  def textFieldShouldBeginEditing(textField)
+    cancel_timer
+    true
+  end
+
   def textField(textField, shouldChangeCharactersInRange:range, replacementString:string)
     value = textField.text.stringByReplacingCharactersInRange(range, withString:string)
 
     if value.to_s.length <= 3
       #textField.text = value
 
-      cup_member = cup.cup_members[textField.indexPath.row]
+      cup_member = cup_members[textField.indexPath.row]
       cup_member.points = value
     end
   end
@@ -129,7 +188,7 @@ class FinishCupViewController < RPTableViewController
 
   def close_cup
     placements = []
-    for cup_member in cup.cup_members
+    for cup_member in cup_members
       if cup_member.points.blank?# || cup_member.placement.blank?
         App.alert "Please fill in the fields!"
         return
@@ -144,11 +203,11 @@ class FinishCupViewController < RPTableViewController
     LoadingView.show
 
     self.saved_item_count = 0
-    cup.cup_members.each do |cup_member|
+    cup_members.each do |cup_member|
       cup_member.save_remote(params) do
         self.saved_item_count += 1
 
-        if saved_item_count == cup.cup_members.length
+        if saved_item_count == cup_members.length
           update_cup_and_redirect
         end
       end

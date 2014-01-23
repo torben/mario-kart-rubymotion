@@ -42,6 +42,10 @@ class Cup < RPModel
     User.find winning_user_id
   end
 
+  def hosting_member
+    CupMember.where(:cup_id).eq(id).and(:user_id).eq(host_user_id).first
+  end
+
   def invited_members
     members_with_state("invited")
   end
@@ -51,6 +55,6 @@ class Cup < RPModel
   end
 
   def members_with_state(state)
-    CupMember.where(:cup_id).eq(id).and(:state).eq(state).all
+    CupMember.where(:cup_id).eq(id).and(:user_id).ne(host_user_id).and(:state).eq(state).all
   end
 end

@@ -34,6 +34,8 @@ class InviteCupViewController < RPCollectionViewController
     @invited_view.results_button.hidden = true
 
     @start_button.when(UIControlEventTouchUpInside, &Proc.new {
+      @invited_view.center_view.alpha = 0
+      @invited_view.hidden = false
       LoadingView.show
 
       cup = Cup.new
@@ -43,7 +45,7 @@ class InviteCupViewController < RPCollectionViewController
         self.cup = Cup.find(new_cup.id)
         do_invite do
           LoadingView.hide
-          show_invite_view
+          show_invite_animation
         end
       end
     }.weak!)
@@ -68,13 +70,10 @@ class InviteCupViewController < RPCollectionViewController
     end
   end
 
-  def show_invite_view
-    @invited_view.hidden = false
-
+  def show_invite_animation
     @invited_view.center_view.alpha = 0
-    UIView.animateWithDuration(0.4, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
+    EM.add_timer 0.4 do
       @invited_view.center_view.alpha = 1
-    }, completion: lambda { |completed|
       wubbel(@invited_view.center_view) do
         UIView.animateWithDuration(0.4, delay:1, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
           @invited_view.alpha = 0
@@ -83,7 +82,7 @@ class InviteCupViewController < RPCollectionViewController
           do_stats
         })
       end
-    })
+    end
   end
 
   def cup=(cup)
