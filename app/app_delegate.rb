@@ -1,5 +1,6 @@
 class AppDelegate
   attr_reader :window
+  attr_accessor :tmp
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     set_defaults
