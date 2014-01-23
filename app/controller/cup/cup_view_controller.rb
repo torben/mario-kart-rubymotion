@@ -171,17 +171,11 @@ class CupViewController < RPTableViewController
   end
 
   def update_member_state(cup_member, state)
-    params = {
-      params: {
-        api_key: user.api_key
-      }
-    }
-
     if cup_member.present?
       LoadingView.show
 
       cup_member.state = state
-      cup_member.save_remote(params) do
+      cup_member.save_remote(params_for(user)) do
         LoadingView.hide
         tableView.reloadData
       end
@@ -192,5 +186,13 @@ class CupViewController < RPTableViewController
     finish_cup_view_controller = FinishCupViewController.alloc.initWithStyle UITableViewStyleGrouped
     navigationController.pushViewController(finish_cup_view_controller, animated: true)
     finish_cup_view_controller.cup = cup
+  end
+
+  def params_for(user)
+    {
+      params: {
+        api_key: user.api_key
+      }
+    }
   end
 end
