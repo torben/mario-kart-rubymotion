@@ -8,6 +8,7 @@ class LoginViewController < RPViewController
     @headlineLabel.text = "Bitte einloggen"
 
     @emailField = RPTextField.new
+    @emailField.keyboardType = UIKeyboardTypeEmailAddress
     @emailField.delegate = self
     @emailField.tag = 1
     @emailField.placeholder = "E-Mail"
