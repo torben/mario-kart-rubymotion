@@ -5,6 +5,22 @@ class RPButton < UIButton
       button.configure_view
       button
     end
+
+    def blue_button
+      colored_button('#fff'.to_color, '#26A5EF'.to_color)
+    end
+
+    def white_button
+      colored_button('#26A5EF'.to_color, '#fff'.to_color)
+    end
+
+    def colored_button(text_color, background_color)
+      button = custom
+      button.setTitleColor(text_color, forState:UIControlStateNormal)
+      button.setBackgroundColor background_color
+      button.layer.cornerRadius = 5
+      button
+    end
   end
 
   def initWithFrame(frame)

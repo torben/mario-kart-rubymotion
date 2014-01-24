@@ -7,23 +7,16 @@ class InviteCupViewController < RPCollectionViewController
     @users = []
     @selected_driver = []
     @selected_rows = []
-    @active_button_color = '#26A5EF'.to_color
-    @inactive_button_color = '#ACE0FE'.to_color
 
     self.title = "Select Players"
-    # self.tableView.registerClass(InviteTableViewCell, forCellReuseIdentifier:"Cell")
     collectionView.backgroundColor = '#F0F0F0'.to_color
     collectionView.registerClass(InviteCollectionViewCell, forCellWithReuseIdentifier:"Cell")
     collectionView.alwaysBounceVertical = true
 
     load_user
 
-    @start_button = RPButton.custom
+    @start_button = RPButton.blue_button
     @start_button.setTitle('Invite Lümmels', forState:UIControlStateNormal)
-    # @start_button.setTitle('Too much Lümmels!', forState:UIControlStateDisabled)
-    @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
-    @start_button.setBackgroundColor @active_button_color
-    @start_button.layer.cornerRadius = 5
     @start_button.frame = [[10, view.height + 70], [300, 60]]
     @start_button.alpha = 0
 
@@ -207,7 +200,7 @@ class InviteCupViewController < RPCollectionViewController
 
   def update_invite_button
     # @start_button.enabled = true
-    @start_button.setBackgroundColor @active_button_color
+    # @start_button.setBackgroundColor @active_button_color
 
     if @selected_driver.length <= 1
       @start_button.alpha = 1

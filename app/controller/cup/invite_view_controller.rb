@@ -23,20 +23,14 @@ class InviteViewController < RPViewController
     @nickname_label.set_font_size 13
     @nickname_label.textColor = '#A1A1A1'.to_color
 
-    @start_button = RPButton.custom
+    @start_button = RPButton.blue_button
     @start_button.setTitle('Annehmen', forState:UIControlStateNormal)
-    @start_button.setTitleColor('#fff'.to_color, forState:UIControlStateNormal)
-    @start_button.setBackgroundColor '#26A5EF'.to_color
-    @start_button.layer.cornerRadius = 5
     @start_button.when(UIControlEventTouchUpInside, &Proc.new {
       will_join(true)
     }.weak!)
 
-    @cancel_button = RPButton.custom
+    @cancel_button = RPButton.white_button
     @cancel_button.setTitle('Ablehnen', forState:UIControlStateNormal)
-    @cancel_button.setTitleColor('#26A5EF'.to_color, forState:UIControlStateNormal)
-    @cancel_button.setBackgroundColor '#fff'.to_color
-    @cancel_button.layer.cornerRadius = 5
     @cancel_button.when(UIControlEventTouchUpInside, &Proc.new {
       will_join(false)
     }.weak!)
@@ -101,7 +95,7 @@ class InviteViewController < RPViewController
       @cancel_button.alpha = 0
     }, completion: nil)
 
-    cup_member = CupMember.where(:cup_id).eq(cup.id).and(:user_id).eq(User.current_user.id).first
+    cup_member = CupMember.where(:cup_id).eq(cup.id).and(:user_id).eq(current_user.id).first
     cup_member.state = answer == true ? "accepted" : "rejected"
 
     cup_member.save_remote(params) do |model|

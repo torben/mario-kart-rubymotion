@@ -25,10 +25,8 @@ class InvitedView < UIView
     status_text_label.textColor = UIColor.whiteColor
     status_text_label.textAlignment = UITextAlignmentCenter
 
-    self.results_button = RPButton.custom
+    self.results_button = RPButton.white_button
     results_button.setTitle('Fill in the results', forState:UIControlStateNormal)
-    results_button.setBackgroundColor '#fff'.to_color
-    results_button.setTitleColor('#26A5EF'.to_color, forState:UIControlStateNormal)
     results_button.layer.cornerRadius = 5
     results_button.frame = [[10, height - 70], [300, 60]]
 

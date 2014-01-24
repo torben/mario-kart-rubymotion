@@ -21,7 +21,7 @@ class LoginViewController < RPViewController
     @passwordField.placeholder = "Passwort"
     @passwordField.text = ""
 
-    @loginButton = RPButton.buttonWithType(UIButtonTypeCustom)
+    @loginButton = RPButton.blue_button
     @loginButton.setTitle("Einloggen", forState:UIControlStateNormal)
     @loginButton.addTarget(self, action:"submitForm", forControlEvents:UIControlEventTouchUpInside)
 
@@ -45,8 +45,7 @@ class LoginViewController < RPViewController
     @passwordField.frame = [[padding, y], [w, h]]
     y += @passwordField.height + padding
 
-    @loginButton.frame = [[padding, y], [w, h]]
-    y += @loginButton.height + padding
+    @loginButton.frame = [[10, view.height - 70], [300, 60]]
   end
 
   def textFieldShouldReturn(textField)
