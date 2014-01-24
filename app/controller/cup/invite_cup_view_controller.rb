@@ -1,4 +1,7 @@
 class InviteCupViewController < RPCollectionViewController
+  include Invite::CollectionViewDatasource
+  include Invite::CollectionViewDelegate
+
   attr_accessor :cup, :users, :saved_item_count
 
   def viewDidLoad
@@ -82,92 +85,11 @@ class InviteCupViewController < RPCollectionViewController
     @cup = cup
   end
 
-  def numberOfSectionsInCollectionView(collectionView)
-    1
-  end
-
-  def collectionView(collectionView, numberOfItemsInSection:section)
-    @users.length
-  end
-
-  def collectionView(collectionView, cellForItemAtIndexPath:indexPath)
-    user = users[indexPath.row]
-
-    cell = collectionView.dequeueReusableCellWithReuseIdentifier("Cell", forIndexPath:indexPath)
-
-    cell.image_view.load_async_image user.avatar_url
-    cell.name_label.text = user.nickname
-    cell.points_label.text = "#{user.total_points} Punkte"
-
-    #cell.cellSelection = UIColor.greenColor
-
-    if @selected_driver.include?(user)
-      # cell.accessoryType = UITableViewCellAccessoryCheckmark
-    end
-
-    cell
-  end
-
-  def collectionView(collectionView, didSelectItemAtIndexPath:indexPath)
-    cell = collectionView.cellForItemAtIndexPath indexPath
-    user = users[indexPath.row]
-
-    if @selected_driver.include?(user)
-      # cell.accessoryType = UITableViewCellAccessoryNone
-      cell.selected = false
-      @selected_driver.delete user
-      @selected_rows.delete indexPath
-    else
-      # return if @selected_driver.length >= 3
-      cell.selected = true
-      # cell.accessoryType = UITableViewCellAccessoryCheckmark
-      @selected_driver.push user
-      @selected_rows.push indexPath
-    end
-
-    cell.update_cell_selection
-    wubbel(cell.contentView)
-    update_invite_button
-
-    # collectionView.deselectRowAtIndexPath(indexPath, animated:false)
-  end
-
-  def collectionView(collectionView, layout: collectionViewLayout, sizeForItemAtIndexPath:indexPath)
-    CGSizeMake(100, 145)
-  end
-
-  def collectionView(collectionView, layout:collectionViewLayout, insetForSectionAtIndex:section)
-    [15,10,15,10]
-  end
-
-  def collectionView(collectionView, layout: collectionViewLayout, minimumInteritemSpacingForSectionAtIndex: section)
-    0
-  end
-
-  def collectionView(collectionView, layout:collectionViewLayout, minimumLineSpacingForSectionAtIndex: section)
-    0
-  end
-
-  def deselect_all_items
-    for indexPath in @selected_rows
-      cell = collectionView.cellForItemAtIndexPath indexPath
-      cell.selected = false if cell.present?
-      cell.update_cell_selection
-    end
-
-    @selected_driver = []
-    @selected_rows = []
-  end
-
   def wubbel(view, &block)
     animate_duration = 0.08
 
     UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
       view.transform = CGAffineTransformMakeScale(0.9, 0.9)
-
-      # UIView.animateWithDuration(0.6, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:40, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-      #   cell.contentView.transform = CGAffineTransformIdentity
-      # }, completion: nil)
     }, completion: lambda { |completed|
       UIView.animateWithDuration(animate_duration, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
         view.transform = CGAffineTransformMakeScale(1.08, 1.08)
@@ -187,21 +109,9 @@ class InviteCupViewController < RPCollectionViewController
         })
       })
     })
-
-    # UIView.animateWithDuration(0.3, delay:0.0, usingSpringWithDamping:0.75, initialSpringVelocity:0.8, options:UIViewAnimationOptionCurveLinear, animations: lambda {cell.contentView.transform = CGAffineTransformIdentity}, completion: nil)
-  end
-
-  def translatedAndScaledTransformUsingViewRect(view_rect, from_rect)
-    scales = CGSizeMake(view_rect.size.width / from_rect.size.width, view_rect.size.height / from_rect.size.height)
-    offset = CGPointMake(CGRectGetMidX(view_rect) - CGRectGetMidX(from_rect), CGRectGetMidY(view_rect) - CGRectGetMidY(from_rect))
-
-    CGAffineTransformMake(scales.width, 0, 0, scales.height, offset.x, offset.y)
   end
 
   def update_invite_button
-    # @start_button.enabled = true
-    # @start_button.setBackgroundColor @active_button_color
-
     if @selected_driver.length <= 1
       @start_button.alpha = 1
       y = if @selected_driver.length == 0
@@ -213,9 +123,6 @@ class InviteCupViewController < RPCollectionViewController
       UIView.animateWithDuration(0.4, delay:0.3, usingSpringWithDamping:0.75, initialSpringVelocity:20, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
         @start_button.y = y
       }, completion: nil)
-    elsif @selected_driver.length > 3
-      # @start_button.enabled = false
-      # @start_button.setBackgroundColor @inactive_button_color
     end
   end
 
