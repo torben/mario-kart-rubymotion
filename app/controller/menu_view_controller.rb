@@ -27,7 +27,6 @@ class MenuViewController < RPViewController
     # Set the page view controller's bounds using an inset rect so that self's view is visible around the edges of the pages.
     page_view_rect = view.bounds
     page_view_controller.view.frame = page_view_rect
-
     page_view_controller.didMoveToParentViewController self
 
     # Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.

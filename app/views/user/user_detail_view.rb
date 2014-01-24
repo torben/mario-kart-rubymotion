@@ -1,5 +1,6 @@
 class UserDetailView < UIView
   attr_accessor :user
+
   def initWithFrame(frame)
     super
 
