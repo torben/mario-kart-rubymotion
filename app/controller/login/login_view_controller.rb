@@ -25,6 +25,8 @@ class LoginViewController < RPViewController
     @loginButton.setTitle("Einloggen", forState:UIControlStateNormal)
     @loginButton.addTarget(self, action:"submitForm", forControlEvents:UIControlEventTouchUpInside)
 
+    @emailField.becomeFirstResponder
+
     view.backgroundColor = UIColor.whiteColor
     view.addSubviews @headlineLabel, @emailField, @passwordField, @loginButton
   end
@@ -43,9 +45,9 @@ class LoginViewController < RPViewController
     y += @emailField.height + padding
 
     @passwordField.frame = [[padding, y], [w, h]]
-    y += @passwordField.height + padding
+    y += @passwordField.height + (padding * 2)
 
-    @loginButton.frame = [[10, view.height - 70], [300, 60]]
+    @loginButton.frame = [[10, y], [300, 60]]
   end
 
   def textFieldShouldReturn(textField)

@@ -20,3 +20,11 @@ vendor/static/build-iPhoneSimulator/libstatic.a
 vendor/static/build-iPhoneOS/libstatic.a
 
 config/config.yml
+
+vendor/static/build-iPhoneSimulator/static.pch
+
+vendor/static/build-iPhoneOS/MBProgressHUD/MBProgressHUD.m.o
+
+vendor/static/build-iPhoneOS/FTWCache/NSString+MD5.m.o
+
+vendor/static/build-iPhoneOS/FTWCache/FTWCache.m.o

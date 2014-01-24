@@ -67,6 +67,8 @@ class InviteCupViewController < RPCollectionViewController
   end
 
   def show_invite_animation
+    SoundPlayer.instance.play_sound "mk64_racestart.wav"
+
     @invited_view.center_view.alpha = 0
     EM.add_timer 0.4 do
       @invited_view.center_view.alpha = 1

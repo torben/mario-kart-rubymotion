@@ -1,6 +1,8 @@
 module Invite
   module CollectionViewDelegate
     def collectionView(collectionView, didSelectItemAtIndexPath:indexPath)
+      SoundPlayer.instance.play_sound "mk64_boing.wav"
+
       cell = collectionView.cellForItemAtIndexPath indexPath
       user = users[indexPath.row]
 

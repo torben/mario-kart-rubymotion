@@ -12,6 +12,8 @@ class InviteViewController < RPViewController
   def viewDidLoad
     super
 
+    SoundPlayer.instance.play_sound "mk64_announcer06-jp.wav"
+
     self.title = "We Need You!"
     view.backgroundColor = '#F0F0F0'.to_color
 
@@ -96,7 +98,12 @@ class InviteViewController < RPViewController
     }, completion: nil)
 
     cup_member = CupMember.where(:cup_id).eq(cup.id).and(:user_id).eq(current_user.id).first
-    cup_member.state = answer == true ? "accepted" : "rejected"
+
+    cup_member.state = "rejected"
+    if answer == true
+      SoundPlayer.instance.play_sound "mk64_announcer11-jp.wav"
+      cup_member.state = "accepted"
+    end
 
     cup_member.save_remote(params) do |model|
       alert = App.alert(answer == true ? "OK, let's roll baby..." : "Maybe next time")

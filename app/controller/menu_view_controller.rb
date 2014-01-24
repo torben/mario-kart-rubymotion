@@ -3,6 +3,9 @@ class MenuViewController < RPViewController
 
   def viewDidLoad
     super
+
+    SoundPlayer.instance.play_sound "mk64_multiplayerstart.wav"
+
     self.page_view_controller = UIPageViewController.alloc.initWithTransitionStyle(UIPageViewControllerTransitionStyleScroll, navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal, options:nil)
     page_view_controller.delegate = self
 
