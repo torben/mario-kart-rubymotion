@@ -117,12 +117,4 @@ class InviteViewController < RPViewController
   def close_invite
     dismissModalViewControllerAnimated(true)
   end
-
-  def params
-    @params ||= {
-      params: {
-        api_key: User.current_user.api_key
-      }
-    }
-  end
 end

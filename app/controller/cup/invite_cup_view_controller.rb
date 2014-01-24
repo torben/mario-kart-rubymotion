@@ -226,14 +226,6 @@ class InviteCupViewController < RPCollectionViewController
     end
   end
 
-  def params
-    @params ||= {
-      params: {
-        api_key: current_user.api_key
-      }
-    }
-  end
-
   def do_invite(&block)
     return if @selected_driver.length == 0
 
