@@ -1,5 +1,5 @@
 class RPTableViewController < UITableViewController
-  include Modules::UserHelper
+  include Helper::Authentication
 
   def viewDidLoad
     self.edgesForExtendedLayout = UIRectEdgeTop

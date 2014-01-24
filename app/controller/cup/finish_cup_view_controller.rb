@@ -292,12 +292,4 @@ class FinishCupViewController < RPTableViewController
     menu_view_controller.goto_vc_at_position(1, UIPageViewControllerNavigationDirectionForward, true)
     self.cup = nil
   end
-
-  def params
-    @params ||= {
-      params: {
-        api_key: User.current_user.api_key
-      }
-    }
-  end
 end

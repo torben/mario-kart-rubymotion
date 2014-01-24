@@ -8,7 +8,7 @@ class RPModel
   end
 
   def self.payload_for_fetch
-    current_user = User.current_user
+    current_user = UserManager.instance.current_user
 
     if current_user.present?
       return {

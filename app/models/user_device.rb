@@ -72,11 +72,11 @@ class UserDevice < RPModel
     end
     options.merge!(default_options)
 
-    if User.current_user.present?
+    if UserManager.instance.current_user.present?
       options.merge!(
         {
           params: {
-            api_key: User.current_user.api_key
+            api_key: UserManager.instance.current_user.api_key
           }
         }
       )

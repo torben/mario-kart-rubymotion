@@ -56,7 +56,7 @@ class AppDelegate
   end
 
   def initialRootViewController
-    if User.current_user.present?
+    if current_user.present?
       MenuViewController.new
     else
       LoginViewController.new
@@ -68,7 +68,7 @@ class AppDelegate
   end
 
   def application(app, didRegisterForRemoteNotificationsWithDeviceToken:device_token)
-    user = User.current_user
+    user = current_user
     return if user.blank?
 
     token = device_token.description.gsub(" ", "").gsub("<", "").gsub(">", "")
@@ -92,6 +92,10 @@ class AppDelegate
     user_device.remote_save
   end
 
+  def current_user
+    UserManager.instance.current_user
+  end
+
   private
 
     def loadNotificationConfig
@@ -107,7 +111,7 @@ class AppDelegate
     end
 
     def open_with(remote_notification)
-      user = User.current_user
+      user = current_user
       return if user.blank?
 
       params = {

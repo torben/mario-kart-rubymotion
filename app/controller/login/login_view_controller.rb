@@ -65,7 +65,7 @@ class LoginViewController < RPViewController
 
   def submitForm
     if @emailField.text.present? && @passwordField.text.present?
-      User.login(@emailField.text, @passwordField.text) do |user|
+      UserManager.instance.login(@emailField.text, @passwordField.text) do |user|
         App.window.rootViewController = MenuViewController.new
       end
     end

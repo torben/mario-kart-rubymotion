@@ -1,5 +1,5 @@
 class RPCollectionViewController < UICollectionViewController
-  include Modules::UserHelper
+  include Helper::Authentication
 
   def prefersStatusBarHidden
     true
