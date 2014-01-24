@@ -23,6 +23,7 @@ class Cup < RPModel
         fields: {
           id:                 :id,
           host_user_id:       :host_user_id,
+          user_id:            :host_user_id,
           winning_user_id:    :winning_user_id,
           motor_class:        :motor_class,
           com:                :com,
