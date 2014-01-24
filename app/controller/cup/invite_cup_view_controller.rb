@@ -271,4 +271,9 @@ class InviteCupViewController < RPCollectionViewController
       menu_view_controller.goto_vc_at_position(2, UIPageViewControllerNavigationDirectionForward, true)
     end
   end
+
+  def show_invite(cup)
+    vc = UINavigationController.alloc.initWithRootViewController InviteViewController.alloc.initWithCup(cup)
+    presentViewController(vc, animated:true, completion:nil)
+  end
 end

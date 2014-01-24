@@ -16,7 +16,7 @@ class AppDelegate
 
     if launchOptions
       remoteNotification = launchOptions[:UIApplicationLaunchOptionsRemoteNotificationKey]
-      openWith(remoteNotification) if remoteNotification
+      open_with(remoteNotification) if remoteNotification
     end
 
     loadNotificationConfig
@@ -31,6 +31,10 @@ class AppDelegate
     new_device = UserDevice.current_user_device.blank?
 
     store_device
+  end
+
+  def application(application, didReceiveRemoteNotification:remoteNotification)
+    open_with(remoteNotification)
   end
 
   def set_defaults
@@ -102,7 +106,33 @@ class AppDelegate
       # end
     end
 
-    def openWith(remoteNotification)
+    def open_with(remote_notification)
+      user = User.current_user
+      return if user.blank?
 
+      params = {
+        payload: {
+          api_key: user.api_key
+        }
+      }
+
+      menu_view_controller = window.rootViewController
+      return unless menu_view_controller.is_a? MenuViewController
+      cup_id = remote_notification[:aps].try(:[], :cup_id)
+      position = 1
+
+      if cup_id.present?
+        LoadingView.show("Loading")
+
+        menu_view_controller.goto_vc_at_position(position, UIPageViewControllerNavigationDirectionForward, false)
+
+        Cup.fetch("#{Cup.url}/#{cup_id}", params) do |new_cup|
+          c = Cup.find(cup_id)
+          LoadingView.hide
+          invite_vc = menu_view_controller.vc_at_position(position)
+
+          invite_vc.show_invite(c)
+        end
+      end
     end
 end
