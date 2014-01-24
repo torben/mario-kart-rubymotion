@@ -67,6 +67,7 @@ class MenuViewController < RPViewController
   end
 
   def bounces(bounce)
+    return # TODO this is not 100% working. Sometimes no scroll is possible on the center controller.
     page_view_controller.view.subviews.each do |v|
       v.bounces = bounce if v.respond_to?(:bounces)
     end
