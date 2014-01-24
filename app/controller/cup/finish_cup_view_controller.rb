@@ -3,6 +3,7 @@ class FinishCupViewController < RPTableViewController
   attr_accessor :saved_item_count, :timer
 
   def viewDidLoad
+    @cached_images = {}
     self.title = "Fill in the results"
     tableView.registerClass(FinishTableViewCell, forCellReuseIdentifier:"Cell")
 
@@ -76,6 +77,7 @@ class FinishCupViewController < RPTableViewController
       LoadingView.show("Deleting")
       cup_members[indexPath.row].destroy_remote(params) do
         LoadingView.hide
+        tableView.reloadData
         reload_cup
       end
     else
@@ -134,10 +136,15 @@ class FinishCupViewController < RPTableViewController
   end
 
   def cup_members
-    cup_members = [cup.hosting_member]
-    cup_members << cup.accepted_members
+    cup_members = active_cup_members
     cup_members << cup.invited_members
     cup_members.flatten
+  end
+
+  def active_cup_members
+    active_cup_members = [cup.hosting_member]
+    active_cup_members << cup.accepted_members
+    active_cup_members.flatten
   end
 
   def row_count
@@ -163,7 +170,14 @@ class FinishCupViewController < RPTableViewController
     cell.input_field.delegate = self
     cell.input_field.indexPath = indexPath
 
-    cell.image_view.load_async_image cup_member.user.avatar_url
+    if @cached_images[cup_member.id].present?
+      cell.image_view.image = @cached_images[cup_member.id]
+    else
+      cell.image_view.load_async_image cup_member.user.avatar_url do |image|
+        @cached_images[cup_member.id] = image
+        cell.image_view.image = image
+      end
+    end
     cell.nickname_label.text = cup_member.user.nickname
     cell.input_field.text = (cup_member.points || "??").to_s
     cell.points_label.text = "Points"
@@ -233,7 +247,7 @@ class FinishCupViewController < RPTableViewController
 
   def close_cup
     placements = []
-    for cup_member in cup_members
+    for cup_member in active_cup_members
       if cup_member.points.blank?# || cup_member.placement.blank?
         App.alert "Please fill in the fields!"
         return
