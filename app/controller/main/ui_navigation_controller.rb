@@ -4,7 +4,6 @@ class UINavigationController
   end
 
   def viewDidLoad
-    puts "RED".red
     self.edgesForExtendedLayout = UIRectEdgeTop
   end
 end
