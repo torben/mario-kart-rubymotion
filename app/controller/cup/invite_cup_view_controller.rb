@@ -16,8 +16,6 @@ class InviteCupViewController < RPCollectionViewController
     collectionView.registerClass(InviteCollectionViewCell, forCellWithReuseIdentifier:"Cell")
     collectionView.alwaysBounceVertical = true
 
-    load_user
-
     @start_button = RPButton.blue_button
     @start_button.setTitle('Invite Lümmels', forState:UIControlStateNormal)
     @start_button.frame = [[10, view.height + 70], [300, 60]]
@@ -55,6 +53,8 @@ class InviteCupViewController < RPCollectionViewController
 
   def viewWillAppear(animated)
     super
+
+    load_user
 
     @start_button.alpha = 0 if @selected_driver.length == 0
   end
