@@ -37,7 +37,7 @@ class InviteViewController < RPViewController
       will_join(false)
     }.weak!)
 
-    close_button = UIBarButtonItem.alloc.initWithTitle("Cancel", style: UIBarButtonItemStylePlain, target:self, action:"close_invite")
+    close_button = UIBarButtonItem.alloc.initWithTitle("Cancel", style: UIBarButtonItemStylePlain, target:self, action:"no_invite")
     navigationItem.rightBarButtonItem = close_button
 
     set_user_text
@@ -109,6 +109,10 @@ class InviteViewController < RPViewController
       alert = App.alert(answer == true ? "OK, let's roll baby..." : "Maybe next time")
       alert.delegate = self
     end
+  end
+
+  def no_invite
+    will_join(false)
   end
 
   def alertView(alertView, clickedButtonAtIndex:index)

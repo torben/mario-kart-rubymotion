@@ -44,6 +44,8 @@ class InviteCupViewController < RPCollectionViewController
       end
     }.weak!)
 
+    load_user
+
     @invited_view.results_button.addTarget(self, action:"do_stats", forControlEvents:UIControlEventTouchUpInside)
 
     view.addSubview @start_button
@@ -53,8 +55,6 @@ class InviteCupViewController < RPCollectionViewController
 
   def viewWillAppear(animated)
     super
-
-    load_user
 
     @start_button.alpha = 0 if @selected_driver.length == 0
   end

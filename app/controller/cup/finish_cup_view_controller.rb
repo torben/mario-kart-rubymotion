@@ -2,6 +2,7 @@ class FinishCupViewController < RPTableViewController
   include FinishCup::TableViewDatasource
   include FinishCup::TableViewDelegate
   include FinishCup::DeleteHandler
+  include FinishCup::TextField
 
   attr_reader :cup
   attr_accessor :saved_item_count, :timer
@@ -115,7 +116,7 @@ class FinishCupViewController < RPTableViewController
     menu_view_controller = App.window.rootViewController
     raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
 
-    menu_view_controller.goto_vc_at_position(1, UIPageViewControllerNavigationDirectionForward, true)
+    menu_view_controller.goto_vc_at_position(1, UIPageViewControllerNavigationDirectionReverse, true)
     self.cup = nil
   end
 end
