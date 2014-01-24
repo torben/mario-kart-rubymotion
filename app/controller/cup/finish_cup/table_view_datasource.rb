@@ -34,13 +34,20 @@ module FinishCup
       cell.points_label.text = "Points"
 
       cell.selectionStyle = UITableViewCellSelectionStyleNone
-      # cell.user = user
-      # cell.cellSelection = UIColor.greenColor
+      cell.contentView.alpha = cell_alpha_for(cup_member)
       cell
     end
 
     def tableView(tableView, heightForRowAtIndexPath:indexPath)
       101
+    end
+
+    def cell_alpha_for(cup_member)
+      case cup_member.try(:state)
+      when "invited"  then 0.5
+      # when "accepted" then 1.0
+      else 1.0
+      end
     end
   end
 end

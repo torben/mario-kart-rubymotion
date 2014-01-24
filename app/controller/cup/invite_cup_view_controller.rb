@@ -133,7 +133,8 @@ class InviteCupViewController < RPCollectionViewController
 
     self.saved_item_count = 0
     @selected_driver.each do |user|
-      cup_member = CupMember.new({ cup_id: cup.id, user_id: user.id, state: 'invited'})
+      state = user.id == current_user.try(:id) ? 'accepted' : 'invited'
+      cup_member = CupMember.new({ cup_id: cup.id, user_id: user.id, state: state})
       cup_member.save_remote(params) do
         self.saved_item_count += 1
 

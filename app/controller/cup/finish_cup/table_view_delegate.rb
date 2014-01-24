@@ -1,22 +1,23 @@
 module FinishCup
   module TableViewDelegate
     def tableView(tableView, didSelectRowAtIndexPath:indexPath)
-      return # TODO do we need an action?
-
       cell = tableView.cellForRowAtIndexPath indexPath
-      user = users[indexPath.row]
+      cup_member = cup_members[indexPath.row]
 
-      if @selected_driver.include?(user)
-        cell.accessoryType = UITableViewCellAccessoryNone
-        @selected_driver.delete user
-      else
-        # return if @selected_driver.length >= 3
+      return if cup_member.blank?
+      return if cup_member.user.id == current_user.try(:id)
+      return unless %w(invited accepted).include?(cup_member.try(:state))
 
-        cell.accessoryType = UITableViewCellAccessoryCheckmark
-        @selected_driver.push user
+      cancel_timer
+
+      cup_member.state = cup_member.state == "invited" ? "accepted" : "invited"
+      cup_member.save_remote(params) do |m|
+        LoadingView.hide
+        tableView.reloadData
+        reload_cup
       end
 
-      tableView.deselectRowAtIndexPath(indexPath, animated:false)
+      # tableView.deselectRowAtIndexPath(indexPath, animated:false)
     end
   end
 end

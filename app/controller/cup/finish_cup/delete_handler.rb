@@ -16,31 +16,34 @@ module FinishCup
     end
 
     def start_delete(cell)
-      return if cell.alpha == 0
+      return if cell.contentView.alpha == 0
       cancel_timer
 
       UIView.animateWithDuration(0.6, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-        cell.alpha = 0.01
+        cell.contentView.alpha = 0.01
       }, completion: lambda { |completed|
         if completed
-          cell.alpha = 0
+          cell.contentView.alpha = 0
           finish_delete(cell)
         end
       })
     end
 
     def cancel_delete(cell)
-      return if cell.alpha == 0
+      return if cell.contentView.alpha == 0
+
+      indexPath = tableView.indexPathForCell(cell)
+      return if indexPath.blank?
 
       UIView.animateWithDuration(0.6, delay:0, options:UIViewAnimationOptionCurveEaseInOut, animations: lambda {
-        cell.alpha = 1
+        cell.contentView.alpha = cell_alpha_for(cup_members[indexPath.row])
       }, completion: lambda { |finished|
         reload_cup if finished
       })
     end
 
     def finish_delete(cell)
-      if cell.alpha == 0.0
+      if cell.contentView.alpha == 0.0
         indexPath = tableView.indexPathForCell(cell)
         return if indexPath.blank?
 
