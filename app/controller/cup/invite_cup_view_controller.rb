@@ -156,15 +156,21 @@ class InviteCupViewController < RPCollectionViewController
   def do_stats
     close_invited_view
 
-    menu_view_controller = App.window.rootViewController
-    raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
+    finish_cup_view_controller = FinishCupViewController.new
+    finish_cup_view_controller.cup = cup
 
-    stats_controller = menu_view_controller.vc_at_position 2
-    stats_controller.cup = cup
+    vc = UINavigationController.alloc.initWithRootViewController finish_cup_view_controller
+    presentViewController(vc, animated:true, completion:nil)
 
-    EM.add_timer 0.2 do
-      menu_view_controller.goto_vc_at_position(2, UIPageViewControllerNavigationDirectionForward, true)
-    end
+    # menu_view_controller = App.window.rootViewController
+    # raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
+
+    # stats_controller = menu_view_controller.vc_at_position 2
+    # stats_controller.cup = cup
+
+    # EM.add_timer 0.2 do
+    #   menu_view_controller.goto_vc_at_position(2, UIPageViewControllerNavigationDirectionForward, true)
+    # end
   end
 
   def show_invite(cup)

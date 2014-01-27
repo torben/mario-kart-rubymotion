@@ -21,6 +21,9 @@ class FinishCupViewController < RPTableViewController
 
     close_button = UIBarButtonItem.alloc.initWithTitle("Done", style: UIBarButtonItemStylePlain, target:self, action:"close_cup")
     navigationItem.rightBarButtonItem = close_button
+
+    cancel_button = UIBarButtonItem.alloc.initWithTitle("Cancel", style: UIBarButtonItemStylePlain, target:self, action:"close_modal")
+    navigationItem.leftBarButtonItem = cancel_button
   end
 
   def viewWillAppear(animated)
@@ -113,10 +116,10 @@ class FinishCupViewController < RPTableViewController
   end
 
   def alertView(alertView, clickedButtonAtIndex:index)
-    menu_view_controller = App.window.rootViewController
-    raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
+    close_modal
+  end
 
-    menu_view_controller.goto_vc_at_position(1, UIPageViewControllerNavigationDirectionReverse, true)
-    self.cup = nil
+  def close_modal
+    dismissModalViewControllerAnimated(true)
   end
 end
