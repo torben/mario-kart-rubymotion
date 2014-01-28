@@ -7,8 +7,8 @@ class ModelSelectViewController < RPTableViewController
     @models = [] if models.blank?
     self.tableView.registerClass(ModelSelectTableViewCell, forCellReuseIdentifier:"Cell")
 
-    close_button = UIBarButtonItem.alloc.initWithTitle("Abbrechen", style: UIBarButtonItemStylePlain, target:self, action:"close_modal")
-    navigationItem.rightBarButtonItem = close_button
+    # close_button = UIBarButtonItem.alloc.initWithTitle("Abbrechen", style: UIBarButtonItemStylePlain, target:self, action:"close_vc")
+    # navigationItem.rightBarButtonItem = close_button
   end
 
   def numberOfSectionsInTableView(tableView)
@@ -43,13 +43,14 @@ class ModelSelectViewController < RPTableViewController
     cell
   end
 
-  def close_modal(model = nil)
-    presentingViewController.topViewController.model_selected(model)
+  def close_vc(model = nil)
+    navigationController.popToRootViewControllerAnimated(true)
+    navigationController.topViewController.model_selected(model)
   end
 
   def tableView(tableView, didSelectRowAtIndexPath:indexPath)
     tableView.deselectRowAtIndexPath(indexPath, animated:false)
 
-    close_modal(models[indexPath.row])
+    close_vc(models[indexPath.row])
   end
 end

@@ -28,3 +28,5 @@ vendor/static/build-iPhoneOS/MBProgressHUD/MBProgressHUD.m.o
 vendor/static/build-iPhoneOS/FTWCache/NSString+MD5.m.o
 
 vendor/static/build-iPhoneOS/FTWCache/FTWCache.m.o
+
+vendor/static/static.bridgesupport

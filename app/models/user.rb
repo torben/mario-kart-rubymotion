@@ -33,6 +33,7 @@ class User < RPModel
           api_key:            :api_key,
           nickname:           :nickname,
           win_count:          :win_count,
+          avatar_data:        :avatar_data,
           avatar_url:         :avatar_url,
           drive_count:        :drive_count,
           total_points:       :total_points,
@@ -43,5 +44,36 @@ class User < RPModel
         relations: [:cups, :vehicles, :characters]
       }
     end
+  end
+
+  def buildHashFromModel(mainKey, model)
+    hash = {
+      mainKey => {}
+    }
+    hash[mainKey] = {}
+
+    model.attributes.each do |key, attribute|
+      if model.class.has_many_columns.keys.include?(key)
+        newKey = attribute.first.class.name.pluralize.downcase
+        hash[mainKey][newKey] = []
+        for a in attribute
+          hash[mainKey][newKey].push(buildHashFromModel(newKey, a)[newKey])
+        end
+      elsif attribute.respond_to?(:attributes)
+        newKey = attribute.class.name.underscore
+        h = buildHashFromModel(newKey, attribute)
+        hash[mainKey][newKey] = h[newKey] if h.has_key?(newKey)
+      else
+        if attribute.is_a?(UIImage)
+          data = UIImageJPEGRepresentation(attribute, 0.8)
+          attribute = data.base64Encoding
+        end
+        model.class.wrapper[:fields].each do |wrapperKey, wrapperValue|
+          hash[mainKey][wrapperKey] = attribute if wrapperValue == key
+        end
+      end
+    end
+
+    return hash
   end
 end

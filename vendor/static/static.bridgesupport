@@ -301,6 +301,41 @@
 <retval declared_type='void' type='v'/>
 </method>
 </class>
+<class name='NSData'>
+<method selector='base64Encoding'>
+<retval declared_type='NSString*' type='@'/>
+</method>
+<method selector='base64EncodingWithLineLength:'>
+<arg declared_type='NSUInteger' index='0' name='lineLength' type='I' type64='Q'/>
+<retval declared_type='NSString*' type='@'/>
+</method>
+<method class_method='true' selector='dataWithBase64EncodedString:'>
+<arg declared_type='NSString*' index='0' name='string' type='@'/>
+<retval declared_type='NSData*' type='@'/>
+</method>
+<method selector='hasPrefix:'>
+<arg declared_type='NSData*' index='0' name='prefix' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='hasPrefixBytes:length:'>
+<arg const='true' declared_type='void*' index='0' name='prefix' type='^v'/>
+<arg declared_type='NSUInteger' index='1' name='length' type='I' type64='Q'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='hasSuffix:'>
+<arg declared_type='NSData*' index='0' name='suffix' type='@'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='hasSuffixBytes:length:'>
+<arg const='true' declared_type='void*' index='0' name='suffix' type='^v'/>
+<arg declared_type='NSUInteger' index='1' name='length' type='I' type64='Q'/>
+<retval declared_type='BOOL' type='B'/>
+</method>
+<method selector='initWithBase64EncodedString:'>
+<arg declared_type='NSString*' index='0' name='string' type='@'/>
+<retval declared_type='id' type='@'/>
+</method>
+</class>
 <class name='NSObject'>
 <method selector='hudWasHidden:'>
 <arg declared_type='MBProgressHUD*' index='0' name='hud' type='@'/>

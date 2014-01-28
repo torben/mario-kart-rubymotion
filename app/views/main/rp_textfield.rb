@@ -16,7 +16,7 @@ class RPTextField < UITextField
   end
 
   def configure_view
-    self.font = UIFont.fontWithName("Avenir Next", size:17)
+    self.font = UIFont.fontWithName("Montserrat-Regular", size:16)
     self.backgroundColor = UIColor.clearColor
   end
 

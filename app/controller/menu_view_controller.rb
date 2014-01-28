@@ -13,7 +13,7 @@ class MenuViewController < RPViewController
 
     left_vc = UINavigationController.alloc.initWithRootViewController RatingViewController.new
     middle_vc = UINavigationController.alloc.initWithRootViewController InviteCupViewController.alloc.initWithCollectionViewLayout(collectionViewLayout)
-    right_vc = UINavigationController.alloc.initWithRootViewController FinishCupViewController.alloc.initWithStyle UITableViewStylePlain
+    right_vc = UINavigationController.alloc.initWithRootViewController UserSettingsViewController.alloc.initWithStyle UITableViewStylePlain
     @viewControllers = [left_vc, middle_vc, right_vc]
 
     page_view_controller.setViewControllers([middle_vc], direction:UIPageViewControllerNavigationDirectionForward, animated:false, completion:nil)
