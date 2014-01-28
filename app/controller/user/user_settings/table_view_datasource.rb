@@ -22,6 +22,10 @@ module UserSettings
         else
           cell.image_view.load_async_image current_user.avatar_url
         end
+
+        cell.image_view.when_tapped &Proc.new {
+          open_action_sheet
+        }.weak!
       when 1
         character = Character.find(current_user.last_character_id)
 

@@ -30,3 +30,5 @@ vendor/static/build-iPhoneOS/FTWCache/NSString+MD5.m.o
 vendor/static/build-iPhoneOS/FTWCache/FTWCache.m.o
 
 vendor/static/static.bridgesupport
+
+vendor/static/build-iPhoneOS/NSDataAdditions/NSDataAdditions.m.o

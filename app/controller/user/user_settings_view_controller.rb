@@ -47,7 +47,7 @@ class UserSettingsViewController < RPTableViewController
   def open_action_sheet
     sheet = UIActionSheet.alloc.initWithTitle("Choose Profile Picture Source", delegate:self, cancelButtonTitle:nil, destructiveButtonTitle:nil, otherButtonTitles:nil)
     sheet.addButtonWithTitle("Choose Photo")
-    sheet.addButtonWithTitle("Take Photo") if Device.camera.front?
+    sheet.addButtonWithTitle("Take Photo")
     sheet.cancelButtonIndex = (sheet.addButtonWithTitle("Cancel"))
     sheet.showInView(App.window)
   end
@@ -60,6 +60,9 @@ class UserSettingsViewController < RPTableViewController
         update_image result[:original_image]
       end
     when 1
+      unless Device.camera.front?
+        return App.alert "There is no camera!"
+      end
       @no_update = true
       BW::Device.camera.front.picture(media_types: [:image]) do |result|
         update_image result[:original_image]
@@ -68,6 +71,8 @@ class UserSettingsViewController < RPTableViewController
   end
 
   def update_image(image)
+    return if image.blank?
+
     current_user.attributes[:avatar_data] = image
     @avatar = image
     @no_update = false

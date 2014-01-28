@@ -24,5 +24,6 @@ class RPProfileImageView < RPImageView
     layer.borderWidth = 3
     layer.cornerRadius = width / 2 if width.present?
     layer.masksToBounds = true
+    self.contentMode = UIViewContentModeScaleAspectFill
   end
 end

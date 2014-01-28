@@ -15,7 +15,7 @@ class UserDetailView < UIView
     y = padding
 
     w = width
-    @user_image_view = RPImageView.alloc.initWithFrame [[x, y], [100, 100]]
+    @user_image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [100, 100]]
     x += @user_image_view.width + padding
     w -= @user_image_view.width
 

@@ -1,7 +1,7 @@
 module UserSettings
   module TableViewDelegate
     def tableView(tableView, didSelectRowAtIndexPath:indexPath)
-      return open_action_sheet if indexPath.row == 0
+      return if indexPath.row == 0
 
       cell = tableView.cellForRowAtIndexPath indexPath
 
