@@ -51,6 +51,9 @@ class InviteCupViewController < RPCollectionViewController
     view.addSubview @start_button
 
     App.window.addSubview @invited_view
+
+    settings_button = UIBarButtonItem.alloc.initWithTitle("Settings", style: UIBarButtonItemStylePlain, target:self, action:"show_settings")
+    navigationItem.rightBarButtonItem = settings_button
   end
 
   def viewWillAppear(animated)
@@ -64,6 +67,11 @@ class InviteCupViewController < RPCollectionViewController
       self.users = User.where(:id).ne(current_user.id).order(:nickname).all
       self.collectionView.reloadData
     end
+  end
+
+  def show_settings
+    vc = UINavigationController.alloc.initWithRootViewController UserSettingsViewController.new
+    presentViewController(vc, animated:true, completion:nil)
   end
 
   def show_invite_animation

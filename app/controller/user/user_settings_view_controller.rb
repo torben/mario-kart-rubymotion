@@ -19,6 +19,9 @@ class UserSettingsViewController < RPTableViewController
     save_button = UIBarButtonItem.alloc.initWithTitle("Save", style: UIBarButtonItemStylePlain, target:self, action:"save_me")
     navigationItem.rightBarButtonItem = save_button
 
+    cancel_button = UIBarButtonItem.alloc.initWithTitle("Cancel", style: UIBarButtonItemStylePlain, target:self, action:"cancel")
+    navigationItem.leftBarButtonItem = cancel_button
+
     # need to store attributes, because of special behaviour in motion model
     @last_vehicle_id = current_user.last_vehicle_id
     @last_character_id = current_user.last_character_id
@@ -30,18 +33,6 @@ class UserSettingsViewController < RPTableViewController
   def viewWillAppear(animated)
     super
     tableView.reloadData
-  end
-
-  def viewDidDisappear(animated)
-    super
-
-    if navigationController.viewControllers.length == 1 && @no_update == false
-      current_user.nickname = @nickname
-      current_user.last_vehicle_id = @last_vehicle_id
-      current_user.last_character_id = @last_character_id
-      current_user.attributes.delete(:avatar_data)
-      @avatar = nil
-    end
   end
 
   def open_action_sheet
@@ -89,18 +80,20 @@ class UserSettingsViewController < RPTableViewController
     tableView.reloadData
   end
 
+  def cancel
+    current_user.nickname = @nickname
+    current_user.last_vehicle_id = @last_vehicle_id
+    current_user.last_character_id = @last_character_id
+    current_user.attributes.delete(:avatar_data)
+
+    dismissModalViewControllerAnimated(true)
+  end
+
   def save_me
-    @last_vehicle_id = current_user.last_vehicle_id
-    @last_character_id = current_user.last_character_id
-    @nickname = current_user.nickname
-
-    menu_view_controller = App.window.rootViewController
-    raise "Da ist was schief!" unless menu_view_controller.is_a?(MenuViewController)
-
     LoadingView.show("Saving...")
     current_user.save_remote(params) do
       LoadingView.hide
-      menu_view_controller.goto_vc_at_position(1, UIPageViewControllerNavigationDirectionReverse, true)
+      dismissModalViewControllerAnimated(true)
     end
   end
 end
