@@ -125,15 +125,16 @@ class AppDelegate
       cup_id = remote_notification[:aps].try(:[], :cup_id)
       position = 1
 
+      menu_view_controller.goto_vc_at_position(position, UIPageViewControllerNavigationDirectionForward, false)
+      invite_vc = menu_view_controller.vc_at_position(position)
+      return unless invite_vc.is_a? InviteCupViewController
+
       if cup_id.present?
         LoadingView.show("Loading")
-
-        menu_view_controller.goto_vc_at_position(position, UIPageViewControllerNavigationDirectionForward, false)
 
         Cup.fetch("#{Cup.url}/#{cup_id}", params) do |new_cup|
           c = Cup.find(cup_id)
           LoadingView.hide
-          invite_vc = menu_view_controller.vc_at_position(position)
 
           invite_vc.show_invite(c)
         end
