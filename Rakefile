@@ -19,8 +19,8 @@ Motion::Project::App.setup do |app|
   app.seed_id = "RC9R3JH5YP"
   app.identifier = 'com.redpeppix.mariokart'
 
-  app.version = '0.2.0'
-  app.short_version = '0.2.0'
+  app.version = '0.2.1'
+  app.short_version = '0.2.1'
 
   app.deployment_target = "7.0"
   app.device_family = [:iphone]

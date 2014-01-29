@@ -5,7 +5,7 @@ class RatingViewController < RPTableViewController
     @users = []
     @cached_images = []
 
-    self.title = "Die Tabelle"
+    self.title = "The Charts"
     tableView.registerClass(RatingTableViewCell, forCellReuseIdentifier:"Cell")
   end
 
