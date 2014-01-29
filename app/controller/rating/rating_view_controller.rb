@@ -3,6 +3,7 @@ class RatingViewController < RPTableViewController
 
   def viewDidLoad
     @users = []
+    @cached_images = []
 
     self.title = "Die Tabelle"
     tableView.registerClass(RatingTableViewCell, forCellReuseIdentifier:"Cell")
@@ -31,7 +32,19 @@ class RatingViewController < RPTableViewController
 
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
     cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath:indexPath)
-    cell.user = users[indexPath.row]
+    user = users[indexPath.row]
+
+    if @cached_images[user.id].present?
+      cell.avatar_image_view.image = @cached_images[user.id]
+    else
+      cell.avatar_image_view.load_async_image user.avatar_url do |image|
+        @cached_images[user.id] = image
+        cell.avatar_image_view.image = image
+      end
+    end
+
+    cell.text_label.text = user.nickname
+    cell.count_label.text = user.points_per_race.to_s
 
     cell
   end

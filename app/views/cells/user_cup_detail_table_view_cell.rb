@@ -1,16 +1,17 @@
 class UserCupDetailTableViewCell < UITableViewCell
-  attr_accessor :cup_member, :cup
+  attr_accessor :placement_label, :character_image_view, :vehicle_image_view, :points_label, :drivers_image_views
 
   def initWithStyle(style, reuseIdentifier:reuseIdentifier)
-    super
-
-    setup_view
+    if super
+      setup_view
+    end
 
     self
   end
 
   def setup_view
     self.userInteractionEnabled = false
+    self.drivers_image_views = []
 
     padding = 3
     x = 10
@@ -19,6 +20,11 @@ class UserCupDetailTableViewCell < UITableViewCell
     h = 30
 
     @placement_label = RPLabel.alloc.initWithFrame [[x, y], [w, h]]
+    @placement_label.layer.borderColor = '#D8D8D8'.to_color.CGColor
+    @placement_label.layer.borderWidth = 3
+    @placement_label.layer.cornerRadius = w / 2
+    @placement_label.layer.masksToBounds = true
+    @placement_label.textAlignment = UITextAlignmentCenter
     x += w + padding
 
     @character_image_view = RPImageView.alloc.initWithFrame [[x, y], [w, h]]
@@ -28,30 +34,17 @@ class UserCupDetailTableViewCell < UITableViewCell
     x += @vehicle_image_view.width + padding
 
     @points_label = RPLabel.alloc.initWithFrame [[x, y], [w, h]]
+    x += @points_label.width + padding
 
-    addSubviews @character_image_view, @vehicle_image_view, @placement_label, @points_label
-  end
+    contentView.addSubviews @character_image_view, @vehicle_image_view, @placement_label, @points_label
 
-  def configure_view
-    self.contentView.backgroundColor = userBackgroundColor
-    @placement_label.text = @cup_member.placement.to_s
-    @character_image_view.load_async_image @cup_member.character.avatar_url if @cup_member.character.present?
-    @vehicle_image_view.load_async_image @cup_member.vehicle.image_url if @cup_member.vehicle.present?
-    @points_label.text = @cup_member.points.to_s
-  end
-
-  def userBackgroundColor
-    if cup_member.present? && @cup.try(:winning_user_id) == cup_member.user.try(:id)
-      'green'.to_color
-    else
-      'red'.to_color
+    for i in 0..2
+      image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [w, h]]
+      image_view.layer.borderWidth = 1.5
+      image_view.hidden = true
+      x += image_view.width + padding
+      contentView.addSubview image_view
+      drivers_image_views.push image_view
     end
-  end
-
-  def set_cup_member_and_cup(cup_member, cup)
-    @cup = cup
-    @cup_member = cup_member
-
-    configure_view
   end
 end

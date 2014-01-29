@@ -1,5 +1,5 @@
 class RatingTableViewCell < UITableViewCell
-  attr_accessor :user
+  attr_accessor :avatar_image_view, :text_label, :count_label
 
   def initWithStyle(style, reuseIdentifier:reuseIdentifier)
     super
@@ -16,16 +16,5 @@ class RatingTableViewCell < UITableViewCell
     @count_label = RPLabel.alloc.initWithFrame [[290, 3], [30, 38]]
 
     addSubviews @avatar_image_view, @text_label, @count_label
-  end
-
-  def configure_view
-    @avatar_image_view.load_async_image user.avatar_url
-    @text_label.text = user.nickname
-    @count_label.text = user.points_per_race.to_s
-  end
-
-  def user=(user)
-    @user = user
-    configure_view
   end
 end
