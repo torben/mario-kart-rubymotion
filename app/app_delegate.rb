@@ -114,15 +114,19 @@ class AppDelegate
       user = current_user
       return if user.blank?
 
-      params = {
-        payload: {
-          api_key: user.api_key
-        }
-      }
+      cup_id = remote_notification[:aps].try(:[], :cup_id)
+      cup_member_id = remote_notification[:aps].try(:[], :cup_member_id)
 
+      if cup_id.present?
+        show_invite(cup_id)
+      elsif cup_member_id.present?
+        update_invite(cup_member_id)
+      end
+    end
+
+    def show_invite(cup_id)
       menu_view_controller = window.rootViewController
       return unless menu_view_controller.is_a? MenuViewController
-      cup_id = remote_notification[:aps].try(:[], :cup_id)
       position = 1
 
       menu_view_controller.goto_vc_at_position(position, UIPageViewControllerNavigationDirectionForward, false)
@@ -139,5 +143,24 @@ class AppDelegate
           invite_vc.show_invite(c)
         end
       end
+    end
+
+    def update_invite(cup_member_id)
+      current_vc = App.window.rootViewController.presentedViewController
+      # return if current_vc.blank? || !current_vc.is_a?(UINavigationController) || !current_vc.visibleViewController.is_a?(InviteViewController)
+
+      cup_member = CupMember.find(cup_member_id)
+      return if cup_member.blank?
+
+      puts params
+      cup_member.fetch("#{cup_member.url}/#{cup_member_id}", params)
+    end
+
+    def params
+      {
+        payload: {
+          api_key: current_user.api_key
+        }
+      }
     end
 end
