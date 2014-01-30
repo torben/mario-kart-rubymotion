@@ -106,17 +106,12 @@ class InviteViewController < RPViewController
     end
 
     cup_member.save_remote(params) do |model|
-      alert = App.alert(answer == true ? "OK, let's roll baby..." : "Maybe next time")
-      alert.delegate = self
+      close_invite
     end
   end
 
   def no_invite
     will_join(false)
-  end
-
-  def alertView(alertView, clickedButtonAtIndex:index)
-    close_invite
   end
 
   def close_invite
