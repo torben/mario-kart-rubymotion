@@ -11,4 +11,8 @@ class RPViewController < UIViewController
   def prefersStatusBarHidden
     true
   end
+
+  def viewDidLoad
+    self.edgesForExtendedLayout = UIRectEdgeNone
+  end
 end

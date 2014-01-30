@@ -4,6 +4,6 @@ class UINavigationController
   end
 
   def viewDidLoad
-    self.edgesForExtendedLayout = UIRectEdgeTop
+    self.edgesForExtendedLayout = UIRectEdgeNone
   end
 end
