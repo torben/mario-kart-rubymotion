@@ -16,11 +16,13 @@ class PlacementLabel < RPLabel
   end
 
   def setup_view
-    self.layer.borderColor = '#D8D8D8'.to_color.CGColor
-    self.layer.borderWidth = 3
-    self.layer.cornerRadius = width / 2
-    self.layer.masksToBounds = true
+    layer.borderColor = '#D8D8D8'.to_color.CGColor
+    layer.borderWidth = 3
+    layer.cornerRadius = width / 2
+    layer.masksToBounds = true
+
     self.textAlignment = UITextAlignmentCenter
+    self.backgroundColor = '#ffffff'.to_color
   end
 
   def set_placement_border(placement)

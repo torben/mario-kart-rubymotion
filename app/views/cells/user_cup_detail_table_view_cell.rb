@@ -11,12 +11,16 @@ class UserCupDetailTableViewCell < UITableViewCell
 
   def setup_view
     self.drivers_image_views = []
+    self.backgroundColor = '#F0F0F0'.to_color
+    number_of_playaz = 4
 
-    padding = 5
     x = 10
-    y = padding
+    y = 5
     w = 40
     h = 40
+
+    padding = ((width - (x * 2)) - (w * (number_of_playaz + 2))) / (number_of_playaz + 1)
+    puts padding
 
     @placement_label = PlacementLabel.alloc.initWithFrame [[x, y], [w, h]]
     x += w + padding
@@ -33,7 +37,7 @@ class UserCupDetailTableViewCell < UITableViewCell
 
     contentView.addSubviews @placement_label, @points_label
 
-    for i in 0..3
+    for i in -1..number_of_playaz
       image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [w, h]]
       image_view.layer.borderWidth = 1.5
       image_view.hidden = true

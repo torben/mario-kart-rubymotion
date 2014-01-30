@@ -26,12 +26,16 @@ class CupDetailTableViewCell < UITableViewCell
     @user_image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [w, h]]
     x += @user_image_view.width + (padding * 3)
 
-    @character_image_view = RPImageView.alloc.initWithFrame [[x, y], [w, h]]
+    @character_image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [w, h]]
+    @character_image_view.hidden = true
     x += w + padding
 
-    @vehicle_image_view = RPImageView.alloc.initWithFrame [[x, y], [76, h]]
+    @vehicle_image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [w, h]]
+    @vehicle_image_view.contentMode = UIViewContentModeScaleAspectFit
+    @vehicle_image_view.hidden = true
     x += @vehicle_image_view.width + padding
 
+    self.backgroundColor = '#F0F0F0'.to_color
     contentView.addSubviews @placement_label, @points_label, @user_image_view, @character_image_view, @vehicle_image_view
   end
 end

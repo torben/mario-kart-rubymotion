@@ -7,6 +7,7 @@ class RatingViewController < RPTableViewController
 
     self.title = "The Charts"
     tableView.registerClass(RatingTableViewCell, forCellReuseIdentifier:"Cell")
+    tableView.backgroundColor = '#F0F0F0'.to_color
   end
 
   def viewWillAppear(animated)
@@ -54,5 +55,9 @@ class RatingViewController < RPTableViewController
     navigationController.pushViewController(user_detail_vc, animated: true)
 
     user_detail_vc.user = users[indexPath.row]
+  end
+
+  def tableView(tableView, heightForRowAtIndexPath:indexPath)
+    50
   end
 end

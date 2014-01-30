@@ -13,9 +13,10 @@ class UserDetailViewController < RPTableViewController
     }
 
     self.title = "All Of Me"
-    self.tableView.registerClass(UserCupDetailTableViewCell, forCellReuseIdentifier:"Cell")
+    tableView.registerClass(UserCupDetailTableViewCell, forCellReuseIdentifier:"Cell")
 
-    self.tableView.tableHeaderView = UserDetailView.alloc.initWithFrame([[0, 0], [self.tableView.width, 100]])
+    tableView.tableHeaderView = UserDetailView.alloc.initWithFrame([[0, 0], [self.tableView.width, 110]])
+    tableView.backgroundColor = '#F0F0F0'.to_color
   end
 
   def user=(user)

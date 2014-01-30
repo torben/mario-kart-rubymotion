@@ -26,7 +26,7 @@ Motion::Project::App.setup do |app|
   app.device_family = [:iphone]
   app.interface_orientations = [:portrait]
 
-  app.frameworks += %w(AVFoundation AudioToolbox)
+  app.frameworks += %w(AVFoundation AudioToolbox QuartzCore)
 
   app.icons = %w(app_icon_iphone@2x.png)
 

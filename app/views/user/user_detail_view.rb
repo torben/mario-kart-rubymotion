@@ -10,16 +10,16 @@ class UserDetailView < UIView
   end
 
   def configure_view
-    padding = 5
+    padding = 10
     x = padding
     y = padding
 
     w = width
-    @user_image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [100, 100]]
+    @user_image_view = RPProfileImageView.alloc.initWithFrame [[x, y], [90, 90]]
     x += @user_image_view.width + padding
     w -= @user_image_view.width
 
-    @user_name_label = RPLabel.alloc.initWithFrame [[x, y], [w, 20]]
+    @user_name_label = RPLabel.alloc.initWithFrame [[x, y], [w, 90]]
     y += @user_image_view.height + padding
 
     addSubviews @user_image_view, @user_name_label
