@@ -6,9 +6,6 @@ class ModelSelectViewController < RPTableViewController
 
     @models = [] if models.blank?
     self.tableView.registerClass(ModelSelectTableViewCell, forCellReuseIdentifier:"Cell")
-
-    # close_button = UIBarButtonItem.alloc.initWithTitle("Abbrechen", style: UIBarButtonItemStylePlain, target:self, action:"close_vc")
-    # navigationItem.rightBarButtonItem = close_button
   end
 
   def numberOfSectionsInTableView(tableView)
