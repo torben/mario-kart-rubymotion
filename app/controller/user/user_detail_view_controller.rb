@@ -50,6 +50,11 @@ class UserDetailViewController < RPTableViewController
     cell.points_label.text = cup_member.points.to_s
 
     cup_members = CupMember.where(:cup_id).eq(cup.id).and(:user_id).ne(current_user.id)
+
+    cell.drivers_image_views.each do |c|
+      c.hidden = true
+    end
+
     CupMember.where(:cup_id).eq(cup.id).and(:points).ne(nil).order(:placement).all.each_with_index do |member, i|
       break if cell.drivers_image_views[i].blank?
 

@@ -20,7 +20,6 @@ class UserCupDetailTableViewCell < UITableViewCell
     h = 40
 
     padding = ((width - (x * 2)) - (w * (number_of_playaz + 2))) / (number_of_playaz + 1)
-    puts padding
 
     @placement_label = PlacementLabel.alloc.initWithFrame [[x, y], [w, h]]
     x += w + padding

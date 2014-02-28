@@ -24,8 +24,8 @@ class RPProfileImageView < RPImageView
     layer.borderWidth = 3
     layer.cornerRadius = width / 2 if width.present?
     layer.masksToBounds = true
-    layer.shouldRasterize = true
-    layer.rasterizationScale = App.window.screen.scale
+    # layer.shouldRasterize = true
+    # layer.rasterizationScale = App.window.screen.scale
 
     self.backgroundColor = '#ffffff'.to_color
     self.contentMode = UIViewContentModeScaleAspectFill

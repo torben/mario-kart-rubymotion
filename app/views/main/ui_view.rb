@@ -50,6 +50,7 @@ class UIView
     self.traverseResponderChainForUIViewController
   end
   alias_method :first_available_view_controller, :firstAvailableUIViewController
+  alias_method :vc, :firstAvailableUIViewController
 
   def traverseResponderChainForUIViewController
     nextResponder = self.nextResponder
